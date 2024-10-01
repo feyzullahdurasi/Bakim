@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- URL Types for Google Sign-In and Facebook Login -->
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <!-- Google Sign-In -->
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLName</key>
+            <string>REVERSED_CLIENT_ID</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <!-- Replace this with your Google reversed client ID -->
+                <string>com.googleusercontent.apps.YOUR_GOOGLE_CLIENT_ID</string>
+            </array>
+        </dict>
+        <dict>
+            <!-- Facebook Login -->
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <!-- Replace this with your Facebook App ID in reverse -->
+                <string>fbYOUR_FACEBOOK_APP_ID</string>
+            </array>
+        </dict>
+    </array>
+
+    <!-- Facebook App ID and Display Name -->
+    <key>FacebookAppID</key>
+    <string>YOUR_FACEBOOK_APP_ID</string>
+    <key>FacebookDisplayName</key>
+    <string>YOUR_FACEBOOK_APP_NAME</string>
+
+    <!-- LSApplicationQueriesSchemes for Facebook -->
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>fbapi</string>
+        <string>fb-messenger-share-api</string>
+        <string>fbauth2</string>
+        <string>fbshareextension</string>
+    </array>
+</dict>
+</plist>

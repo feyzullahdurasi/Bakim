@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		6541D7622CABF312007139FF /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 6541D7612CABF312007139FF /* GoogleSignIn */; };
+		6541D7642CABF312007139FF /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 6541D7632CABF312007139FF /* GoogleSignInSwift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		657C16CF2CA54A750025213A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,9 +34,22 @@
 		657C16D82CA54A750025213A /* BakimUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BakimUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		6541D7662CABF57C007139FF /* Exceptions for "Bakim" folder in "Bakim" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 657C16BD2CA54A730025213A /* Bakim */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		657C16C02CA54A730025213A /* Bakim */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				6541D7662CABF57C007139FF /* Exceptions for "Bakim" folder in "Bakim" target */,
+			);
 			path = Bakim;
 			sourceTree = "<group>";
 		};
@@ -52,6 +70,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6541D7622CABF312007139FF /* GoogleSignIn in Frameworks */,
+				6541D7642CABF312007139FF /* GoogleSignInSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +132,8 @@
 			);
 			name = Bakim;
 			packageProductDependencies = (
+				6541D7612CABF312007139FF /* GoogleSignIn */,
+				6541D7632CABF312007139FF /* GoogleSignInSwift */,
 			);
 			productName = Bakim;
 			productReference = 657C16BE2CA54A730025213A /* Bakim.app */;
@@ -195,6 +217,9 @@
 			);
 			mainGroup = 657C16B52CA54A730025213A;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				6541D7602CABF312007139FF /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 657C16BF2CA54A730025213A /* Products */;
 			projectDirPath = "";
@@ -399,6 +424,7 @@
 				DEVELOPMENT_TEAM = 2BJUT72GH8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Bakim/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -428,6 +454,7 @@
 				DEVELOPMENT_TEAM = 2BJUT72GH8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Bakim/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -558,6 +585,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6541D7602CABF312007139FF /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6541D7612CABF312007139FF /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6541D7602CABF312007139FF /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		6541D7632CABF312007139FF /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6541D7602CABF312007139FF /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 657C16B62CA54A730025213A /* Project object */;
 }
