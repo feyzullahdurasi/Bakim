@@ -8,29 +8,38 @@
 import Foundation
 import CoreData
 
-// Barber Model with CoreData entity representation
 struct ServiceEntity: Identifiable, Codable {
-    var id: Int? // Optional UUID if using CoreData or any auto-generation system
-    var barberName: String?
+    var id: Int?  // Optional UUID if using CoreData or any auto-generation system
+    var serviceName: String?
     var localeName: String?
-    var besinKarbonhidrat: String?
+    var carbohydrateContent: String?
     var rating: String?
     var comment: String?
-    var barberImage: String?
+    var serviceImage: String?
+    
+    init(id: Int?, serviceName: String?, localeName: String?, carbohydrateContent: String?, rating: String?, comment: String?, serviceImage: String?) {
+        self.id = id
+        self.serviceName = serviceName
+        self.localeName = localeName
+        self.carbohydrateContent = carbohydrateContent
+        self.rating = rating
+        self.comment = comment
+        self.serviceImage = serviceImage
+    }
 
-    // CodingKeys if JSON keys are different than Swift properties
+    // CodingKeys if JSON keys are different from Swift properties
     enum CodingKeys: String, CodingKey {
-        case barberName = "isim"
+        case serviceName = "isim"
         case localeName = "kalori"
-        case besinKarbonhidrat = "karbonhidrat"
+        case carbohydrateContent = "karbonhidrat"
         case rating = "protein"
         case comment = "yag"
-        case barberImage = "gorsel"
+        case serviceImage = "gorsel"
     }
 }
 
-// Comment Model
-struct Comment: Identifiable, Codable {
+// Comment Model for user feedback
+struct UserComment: Identifiable, Codable {
     var id = UUID()  // Unique ID for SwiftUI lists
     var username: String
     var commentText: String

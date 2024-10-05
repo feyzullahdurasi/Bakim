@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @ObservedObject var viewModel: HomeViewModel
     @State private var selectedTab = 0
 
     var body: some View {
         TabView(selection: $selectedTab) {
             // Home Tab
-            HomeView()
+            HomeView(viewModel: viewModel)
                 .tabItem {
                     Image(systemName: "house.fill")
                     Text("Home")
@@ -37,16 +38,9 @@ struct MainTabView: View {
                 .tag(2)
         }
         .accentColor(.blue) // Customize the selected tab color
-    }
-}
-
-struct Home2View: View {
-    var body: some View {
-        VStack {
-            Text("Home")
-                .font(.largeTitle)
-                .padding()
-            Spacer()
+        .onAppear {
+            // Ensure the Home tab is selected when the view appears
+            selectedTab = 0
         }
     }
 }
@@ -73,7 +67,6 @@ struct SettingsView: View {
     }
 }
 
-
 #Preview {
-    MainTabView()
+    MainTabView(viewModel: HomeViewModel())
 }

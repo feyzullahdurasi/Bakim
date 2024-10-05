@@ -12,20 +12,21 @@ struct SplashView: View {
     @State private var navigateToNextScreen: Bool = false
 
     var body: some View {
-        VStack {
-            // You can add a logo or splash animation here
-            Text("Bakim")
-                .font(.largeTitle)
-                .bold()
-                .padding()
+        NavigationStack {
+            VStack {
+                Text("Bakim")
+                    .font(.title)
+                    .padding()
+                    .fontWeight(.bold)
 
-            // Navigation logic
-            if navigateToNextScreen {
-                if isLoggedIn {
-                    // Navigate to InfoView if logged in
-                    InfoView()
-                } else {
-                    LoginView()
+                // Navigation logic
+                if navigateToNextScreen {
+                    if isLoggedIn {
+                        // Navigate to InfoView if logged in
+                        InfoView()
+                    } else {
+                        LoginView()
+                    }
                 }
             }
         }
