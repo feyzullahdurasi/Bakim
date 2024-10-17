@@ -9,83 +9,107 @@ import SwiftUI
 
 struct RegisterView: View {
     @StateObject private var viewModel = RegisterViewModel()
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         ScrollView {
-            VStack {
-                // Register Card
-                RoundedRectangle(cornerRadius: 0)
-                    .fill(Color.white)
-                    .shadow(radius: 8)
-                    .padding(.horizontal, 12)
-                    .overlay(
-                        VStack(alignment: .leading, spacing: 16) {
-                            Toggle(isOn: $viewModel.isBarber) {
-                                Text("Bir işletme sahibiyim.")
-                            }
-                            .padding(.top, 12)
+            VStack(spacing: 20) {
+                // Toggle for business owner
+                Toggle(isOn: $viewModel.isBarber) {
+                    Text("Bir işletme sahibiyim")
+                        .font(.headline)
+                }
+                .padding()
+                .background(Color(UIColor.systemBackground))
+                .cornerRadius(10)
+                .shadow(radius: 2)
 
-                            if viewModel.isBarber {
-                                VStack(spacing: 16) {
-                                    Button(action: {
-                                        // Fotoğraf seçme işlemi
-                                    }) {
-                                        Text("Fotoğraf Seç")
-                                            .frame(width: 120, height: 150)
-                                            .background(Color.gray.opacity(0.2))
-                                            .cornerRadius(8)
-                                    }
+                // Conditional business owner fields
+                if viewModel.isBarber {
+                    businessOwnerFields
+                }
 
-                                    TextField("İşletme Adı", text: $viewModel.businessName)
-                                        .padding()
-                                        .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
+                // Common fields
+                commonFields
 
-                                    TextField("Konum", text: $viewModel.location)
-                                        .padding()
-                                        .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
+                // Register button
+                Button(action: viewModel.register) {
+                    Text("Kayıt Ol")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .cornerRadius(10)
+                }
+                .padding(.top)
 
-                                    ServicesSelectionView(selectedServices: $viewModel.selectedServices)
-                                }
-                                .transition(.slide)
-                            }
-
-                            TextField("Ad Soyad", text: $viewModel.fullName)
-                                .padding()
-                                .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
-
-                            TextField("E-posta", text: $viewModel.email)
-                                .padding()
-                                .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
-
-                            SecureField("Şifre", text: $viewModel.password)
-                                .padding()
-                                .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
-
-                            SecureField("Şifreyi Tekrarla", text: $viewModel.rePassword)
-                                .padding()
-                                .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
-
-                            Button(action: viewModel.register) {
-                                Text("Kayıt Ol")
-                                    .font(.system(size: 16))
-                                    .foregroundColor(.white)
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.blue)
-                                    .cornerRadius(8)
-                            }
-                            .padding(.top, 16)
-
-                            if let errorMessage = viewModel.errorMessage {
-                                Text(errorMessage)
-                                    .foregroundColor(.red)
-                            }
-                        }
-                        .padding(16)
-                    )
+                // Error message
+                if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .padding()
+                }
             }
-            .background(Color(UIColor.systemGray6))
+            .padding()
+            .background(Color(UIColor.systemGroupedBackground))
         }
+    }
+
+    private var businessOwnerFields: some View {
+        VStack(spacing: 15) {
+            Button(action: {
+                // Fotoğraf seçme işlemi
+            }) {
+                Text("Fotoğraf Seç")
+                    .frame(width: 120, height: 150)
+                    .background(Color(UIColor.systemGray5))
+                    .cornerRadius(10)
+            }
+
+            customTextField(title: "İşletme Adı", text: $viewModel.businessName)
+            customTextField(title: "Konum", text: $viewModel.location)
+            ServicesSelectionView(selectedServices: $viewModel.selectedServices)
+        }
+        .padding()
+        .background(Color(UIColor.systemBackground))
+        .cornerRadius(10)
+        .shadow(radius: 2)
+    }
+
+    private var commonFields: some View {
+        VStack(spacing: 15) {
+            customTextField(title: "Ad Soyad", text: $viewModel.fullName)
+            customTextField(title: "E-posta", text: $viewModel.email)
+            customSecureField(title: "Şifre", text: $viewModel.password)
+            customSecureField(title: "Şifreyi Tekrarla", text: $viewModel.rePassword)
+        }
+        .padding()
+        .background(Color(UIColor.systemBackground))
+        .cornerRadius(10)
+        .shadow(radius: 2)
+    }
+
+    private func customTextField(title: String, text: Binding<String>) -> some View {
+        TextField(title, text: text)
+            .padding()
+            .background(Color(UIColor.systemBackground))
+            .cornerRadius(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+            )
+    }
+
+    private func customSecureField(title: String, text: Binding<String>) -> some View {
+        SecureField(title, text: text)
+            .padding()
+            .background(Color(UIColor.systemBackground))
+            .cornerRadius(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+            )
     }
 }
 

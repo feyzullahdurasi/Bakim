@@ -9,29 +9,50 @@ import SwiftUI
 
 struct HomeView: View {
     @ObservedObject var viewModel: HomeViewModel
-
+    
+    @State private var isDetailView = false
+    @State private var showSearchView = false
+    @State private var showDestinationSearchView = false
+    @State private var searchWord = ""
+    
     var body: some View {
         NavigationView {
-            ZStack {
+            VStack {
+                FilterBar(
+                    showDestinationFilterView: $showDestinationSearchView,
+                    showSearchView: $showSearchView,
+                    searchWord: $searchWord
+                )
+                .transition(.move(edge: .top))
+                .frame(height: 55)
+                
                 ScrollView {
-                    LazyVStack {
+                    LazyVStack(spacing: 16) {
                         ForEach(viewModel.services) { service in
-                            ServiceRowView(service: service)
-                                .padding(.horizontal)
+                            ListingItemView(
+                                barberName: service.serviceName ?? "Bilinmeyen Hizmet",
+                                location: service.localeName ?? "Bilinmeyen Lokasyon",
+                                rating: service.rating ?? "N/A",
+                                image: getImageSource(from: service.serviceImage)
+                            )
+                            .onTapGesture {
+                                isDetailView = true
+                            }
                         }
                     }
-                    .refreshable {
-                        viewModel.refreshData(serviceType: viewModel.selectedServiceType)
-                    }
+                    .padding(.vertical)
+                }
+                .refreshable {
+                    viewModel.refreshData(serviceType: viewModel.selectedServiceType)
                 }
                 .opacity(viewModel.serviceLoading || viewModel.serviceError ? 0 : 1)
-
+                
                 if viewModel.serviceLoading {
                     ProgressView()
                         .scaleEffect(1.5)
                         .padding()
                 }
-
+                
                 if viewModel.serviceError {
                     Text("Hata! Tekrardan Deneyiniz!")
                         .font(.headline)
@@ -43,53 +64,25 @@ struct HomeView: View {
             .navigationTitle(viewModel.selectedServiceType ?? "Hizmetler")
         }
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                if viewModel.services.isEmpty {
-                    viewModel.refreshData(serviceType: viewModel.selectedServiceType)
-                }
+            if viewModel.services.isEmpty {
+                viewModel.refreshData(serviceType: viewModel.selectedServiceType)
             }
         }
     }
-}
-
-struct ServiceRowView: View {
-    let service: ServiceEntity
-
-    var body: some View {
-        HStack {
-            Image(systemName: "person.crop.circle.fill")
-                .resizable()
-                .frame(width: 60, height: 60)
-                .background(Circle().fill(Color.gray).opacity(0.1))
-                .padding(.trailing, 8)
-
-            VStack(alignment: .leading) {
-                Text(service.serviceName ?? "Bilinmeyen Hizmet")
-                    .font(.headline)
-                Text(service.localeName ?? "Bilinmeyen Lokasyon")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-            }
-            Spacer()
-
-            if let rating = service.rating {
-                Text(rating)
-                    .font(.headline)
-                    .padding(8)
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .clipShape(Circle())
+    
+    private func getImageSource(from serviceImage: String?) -> String {
+        if let image = serviceImage, !image.isEmpty {
+            if image.hasPrefix("http://") || image.hasPrefix("https://") {
+                return image
+            } else {
+                return "https://example.com/placeholder.jpg"
             }
         }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white)
-                .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 4)
-        )
-        .padding(.vertical, 4)
+        return "https://example.com/placeholder.jpg"
     }
 }
+
+
 
 #Preview {
     HomeView(viewModel: HomeViewModel())

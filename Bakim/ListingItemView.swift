@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct ListingItemView: View {
-    var barberName: String = "Selim Serdar Kuaför"
-    var location: String = "Aydınlı Mah. Merkez"
-    var rating: String = "4.8"
-    var image: String = "barber_image_placeholder" // Replace with your image asset
+    var barberName: String
+    var location: String
+    var rating: String
+    var image: String
 
     var body: some View {
         ZStack {
@@ -22,13 +22,30 @@ struct ListingItemView: View {
             
             HStack(spacing: 16) {
                 // Barber Image
-                Image(image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 100, height: 100)
-                    .clipShape(Circle()) // Circular image
-                    .overlay(Circle().stroke(Color.gray.opacity(0.3), lineWidth: 2))
-                    .shadow(radius: 5)
+                AsyncImage(url: URL(string: image)) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                    case .failure:
+                        Image(systemName: "person.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(.gray)
+                    @unknown default:
+                        Image(systemName: "person.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(.gray)
+                    }
+                }
+                .frame(width: 100, height: 100)
+                .clipShape(Circle())
+                .overlay(Circle().stroke(Color.gray.opacity(0.3), lineWidth: 2))
+                .shadow(radius: 5)
 
                 // Barber Info (Name & Location)
                 VStack(alignment: .leading, spacing: 8) {
@@ -73,5 +90,5 @@ struct ListingItemView: View {
 }
 
 #Preview {
-    ListingItemView()
+    ListingItemView(barberName: "Örnek Kuaför", location: "Örnek Lokasyon", rating: "4.5", image: "https://example.com/image.jpg")
 }

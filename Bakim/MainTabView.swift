@@ -56,17 +56,6 @@ struct MapsView: View {
     }
 }
 
-struct SettingsView: View {
-    var body: some View {
-        VStack {
-            Text("Settings")
-                .font(.largeTitle)
-                .padding()
-            Spacer()
-        }
-    }
-}
-
 #Preview {
     MainTabView(viewModel: HomeViewModel())
 }

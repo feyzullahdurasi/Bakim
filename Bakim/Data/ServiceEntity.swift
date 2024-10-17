@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 struct ServiceEntity: Identifiable, Codable {
-    var id: Int?  // Optional UUID if using CoreData or any auto-generation system
+    var id: Int?
     var serviceName: String?
     var localeName: String?
     var carbohydrateContent: String?
@@ -27,7 +27,6 @@ struct ServiceEntity: Identifiable, Codable {
         self.serviceImage = serviceImage
     }
 
-    // CodingKeys if JSON keys are different from Swift properties
     enum CodingKeys: String, CodingKey {
         case serviceName = "isim"
         case localeName = "kalori"
@@ -38,9 +37,8 @@ struct ServiceEntity: Identifiable, Codable {
     }
 }
 
-// Comment Model for user feedback
 struct UserComment: Identifiable, Codable {
-    var id = UUID()  // Unique ID for SwiftUI lists
+    var id = UUID()
     var username: String
     var commentText: String
 }
