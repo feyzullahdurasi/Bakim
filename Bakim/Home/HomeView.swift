@@ -30,8 +30,8 @@ struct HomeView: View {
                     LazyVStack(spacing: 16) {
                         ForEach(viewModel.services) { service in
                             ListingItemView(
-                                barberName: service.serviceName ?? "Bilinmeyen Hizmet",
-                                location: service.localeName ?? "Bilinmeyen Lokasyon",
+                                barberName: service.serviceName ?? "Unknown Service",
+                                location: service.localeName ?? "Unknown Location",
                                 rating: service.rating ?? "N/A",
                                 image: getImageSource(from: service.serviceImage)
                             )
@@ -54,14 +54,14 @@ struct HomeView: View {
                 }
                 
                 if viewModel.serviceError {
-                    Text("Hata! Tekrardan Deneyiniz!")
+                    Text("Error! Try again!")
                         .font(.headline)
                         .foregroundColor(.red)
                         .multilineTextAlignment(.center)
                         .padding()
                 }
             }
-            .navigationTitle(viewModel.selectedServiceType ?? "Hizmetler")
+            .navigationTitle(viewModel.selectedServiceType ?? "Services")
         }
         .onAppear {
             if viewModel.services.isEmpty {

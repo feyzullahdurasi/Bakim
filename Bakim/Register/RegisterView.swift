@@ -16,7 +16,7 @@ struct RegisterView: View {
             VStack(spacing: 20) {
                 // Toggle for business owner
                 Toggle(isOn: $viewModel.isBarber) {
-                    Text("Bir işletme sahibiyim")
+                    Text("I am a business owner")
                         .font(.headline)
                 }
                 .padding()
@@ -34,7 +34,7 @@ struct RegisterView: View {
 
                 // Register button
                 Button(action: viewModel.register) {
-                    Text("Kayıt Ol")
+                    Text("Sign Up")
                         .font(.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
@@ -61,14 +61,14 @@ struct RegisterView: View {
             Button(action: {
                 // Fotoğraf seçme işlemi
             }) {
-                Text("Fotoğraf Seç")
+                Text("Select Photo")
                     .frame(width: 120, height: 150)
                     .background(Color(UIColor.systemGray5))
                     .cornerRadius(10)
             }
 
-            customTextField(title: "İşletme Adı", text: $viewModel.businessName)
-            customTextField(title: "Konum", text: $viewModel.location)
+            customTextField(title: "Business Name", text: $viewModel.businessName)
+            customTextField(title: "Location", text: $viewModel.location)
             ServicesSelectionView(selectedServices: $viewModel.selectedServices)
         }
         .padding()
@@ -79,10 +79,10 @@ struct RegisterView: View {
 
     private var commonFields: some View {
         VStack(spacing: 15) {
-            customTextField(title: "Ad Soyad", text: $viewModel.fullName)
-            customTextField(title: "E-posta", text: $viewModel.email)
-            customSecureField(title: "Şifre", text: $viewModel.password)
-            customSecureField(title: "Şifreyi Tekrarla", text: $viewModel.rePassword)
+            customTextField(title: "Name Surname", text: $viewModel.fullName)
+            customTextField(title: "Email", text: $viewModel.email)
+            customSecureField(title: "Password", text: $viewModel.password)
+            customSecureField(title: "Repeat Password", text: $viewModel.rePassword)
         }
         .padding()
         .background(Color(UIColor.systemBackground))

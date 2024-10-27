@@ -16,17 +16,17 @@ struct LoginView: View {
                 // Lottie Animation View
                 
                 VStack(spacing: 16) {
-                    TextField("E-posta", text: $viewModel.email)
+                    TextField("Email", text: $viewModel.email)
                         .padding()
                         .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
                         .padding(.top, 12)
                     
-                    SecureField("Şifre", text: $viewModel.password)
+                    SecureField("Password", text: $viewModel.password)
                         .padding()
                         .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
                     
                     Button(action: viewModel.login) {
-                        Text("Giriş Yap")
+                        Text("Sign In")
                             .font(.system(size: 16))
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
@@ -41,7 +41,7 @@ struct LoginView: View {
                             Image("google_icon")
                                 .resizable()
                                 .frame(width: 24, height: 24)
-                            Text("Google ile Giriş Yap")
+                            Text("Sign in with Google")
                                 .foregroundColor(.black)
                         }
                         .padding()
@@ -51,9 +51,9 @@ struct LoginView: View {
                     .padding(.top, 12)
                     
                     HStack {
-                        Text("Hesabınız yok mu?")
+                        Text("Don't you have an account?")
                         NavigationLink(destination: RegisterView()) {
-                            Text("Kayıt Ol")
+                            Text("Sign Up")
                                 .foregroundColor(.blue)
                         }
                     }

@@ -19,17 +19,17 @@ struct ReservationView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Text("Ödeme Bilgileri")
+            Text("Payment Information")
                 .font(.title2)
                 .bold()
 
             // Display selected date and time
-            Text("Randevu Tarihi: \(formattedDate)")
+            Text("Appointment Date: \(formattedDate)")
                 .font(.headline)
-            Text("Randevu Saati: \(selectedTime)")
+            Text("Appointment Time: \(selectedTime)")
                 .font(.headline)
             
-            Text("Toplam Ücret: \(totalPrice)₺")
+            Text("Total Price: \(totalPrice)₺")
                 .font(.headline)
             
             var formattedCardNumber: String {
@@ -45,7 +45,7 @@ struct ReservationView: View {
                 .overlay(Text(formattedCardNumber).opacity(0))
             
             HStack {
-                TextField("Son Kullanma Tarihi (MM/YY)", text: $expirationDate)
+                TextField("Expiration Date (MM/YY)", text: $expirationDate)
                     .keyboardType(.numberPad)
                     .onChange(of: expirationDate) { newValue, _ in
                         formatExpirationDate(newValue)
@@ -61,7 +61,7 @@ struct ReservationView: View {
                     .frame(width: 80)
             }
             
-            TextField("Kart Sahibinin Adı", text: $cardHolderName)
+            TextField("Cardholder Name", text: $cardHolderName)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
             
             Button("Ödemeyi Tamamla") {
@@ -75,7 +75,7 @@ struct ReservationView: View {
             Spacer()
         }
         .padding()
-        .navigationTitle("Rezervasyon")
+        .navigationTitle("Reservation")
     }
 
     private var formattedDate: String {

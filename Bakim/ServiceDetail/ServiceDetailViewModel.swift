@@ -44,8 +44,8 @@ class ServiceDetailViewModel: ObservableObject {
     
     private func scheduleReminder(date: String, time: String) {
         let content = UNMutableNotificationContent()
-        content.title = "Randevu Hatırlatıcı"
-        content.body = "Randevunuz 2 saat içinde!"
+        content.title = "Appointment Reminder"
+        content.body = "Your appointment is in 2 hours!"
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd/MM/yyyy HH:mm"

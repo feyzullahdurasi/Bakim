@@ -10,19 +10,32 @@ import SwiftUI
 struct SettingsView: View {
     @AppStorage("notifications") private var notificationsEnabled = true
     @AppStorage("darkMode") private var isDarkMode = false
-    @AppStorage("language") private var selectedLanguage = "Türkçe"
+    @StateObject private var languageManager = LanguageManager.shared
     @State private var changeTheme: Bool = false
     @AppStorage("userTheme") private var userTheme: Theme = .systemDefault
     
-    let languages = ["Türkçe", "English", "Deutsch"]
+    let languages = ["Turkish", "English", "Deutsch", "French"]
     
     @Environment(\.colorScheme) var colorScheme
+    
+    // Dil kodlarını görüntülenen dil adlarıyla eşleştiren bir dictionary
+    private let languageMapping: [String: String] = [
+        "tr": "Turkish",
+        "en": "English",
+        "de": "Deutsch",
+        "fr": "French"
+    ]
+    
+    // Görüntülenen dil adını dil koduna çeviren computed property
+    private var displayLanguage: String {
+        languageMapping.first(where: { $0.key == languageManager.currentLanguage })?.value ?? "English"
+    }
     
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Bildirimler")) {
-                    Toggle("Bildirimleri Etkinleştir", isOn: $notificationsEnabled)
+                Section(header: Text("Notifications")) {
+                    Toggle("Enable Notifications", isOn: $notificationsEnabled)
                         .onChange(of: notificationsEnabled) { newValue, _ in
                             showToast(message: newValue ? "Bildirimler Açık" : "Bildirimler Kapalı")
                         }
@@ -34,28 +47,35 @@ struct SettingsView: View {
                     }
                 }
                 
-                Section(header: Text("Dil")) {
-                    Picker("Dil Seçimi", selection: $selectedLanguage) {
-                        ForEach(languages, id: \.self) {
-                            Text($0)
+                Section(header: Text("Language")) {
+                    Picker("Select Language", selection: $languageManager.currentLanguage) {
+                        ForEach(languages, id: \.self) { language in
+                            Text(language)
+                                .tag(getLanguageCode(for: language) ?? "en")
                         }
                     }
-                    .onChange(of: selectedLanguage) { newValue, _ in
-                        showToast(message: "Dil değiştirildi: \(newValue)")
+                }
+                
+                Section(header: Text("Exit")) {
+                    Button("Update User Information") {
+                        
+                    }
+                    Button("Log Out") {
+                        
                     }
                 }
                 
                 Section {
-                    Button("Gizlilik Politikası") {
+                    Button("Privacy Policy") {
                         showToast(message: "Gizlilik Politikası açıldı")
                     }
                     
-                    Button("Hakkında") {
+                    Button("About") {
                         showToast(message: "Uygulama hakkında bilgi")
                     }
                 }
             }
-            .navigationTitle("Ayarlar")
+            .navigationTitle("Settings")
         }
         .sheet(isPresented: $changeTheme, content: {
             ThemeChangeView()
@@ -65,14 +85,21 @@ struct SettingsView: View {
     }
     
     private func setAppTheme(isDark: Bool) {
-        // SwiftUI'da temayı doğrudan değiştiremeyiz, bu yüzden kullanıcıya bir mesaj gösteriyoruz
-        showToast(message: isDark ? "Koyu Tema" : "Açık Tema")
+        showToast(message: isDark ? "Dark Theme" : "Light Theme")
     }
     
     private func showToast(message: String) {
-        // SwiftUI'da doğrudan Toast gösteremiyoruz, bu yüzden bir alert veya overlay kullanabiliriz
-        // Bu örnekte sadece print kullanıyoruz
         print(message)
+    }
+    
+    private func getLanguageCode(for language: String) -> String? {
+        switch language {
+        case "Turkish": return "tr"
+        case "English": return "en"
+        case "Deutsch": return "de"
+        case "French": return "fr"
+        default: return nil
+        }
     }
 }
 

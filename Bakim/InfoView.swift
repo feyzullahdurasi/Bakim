@@ -16,40 +16,37 @@ struct InfoView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     // Title
-                    Text("Hizmet Seçimi")
+                    Text("Service Selection")
                         .font(.system(size: 24, weight: .bold))
                         .foregroundColor(Color(red: 25/255, green: 46/255, blue: 165/255))
 
                     // Subtitle
-                    Text("İhtiyacınız olan hizmeti seçin")
+                    Text("Select the service you need")
                         .font(.system(size: 16))
-                        .padding(.bottom, 16)
+                        .padding(.bottom, 32)
 
                     // Buttons for services
                     VStack(spacing: 16) {
-                        ServiceButton(title: "Erkek Kuaför", backgroundColor: Color.blue) {
-                            selectService("Erkek Kuaför")
+                        ServiceButton(title: NSLocalizedString("Men's Hairdresser", comment: "Men's Hairdresser option"), backgroundColor: Color.blue) {
+                            selectService("Men's Hairdresser")
                         }
-                        ServiceButton(title: "Kadın Kuaför", backgroundColor: Color.pink) {
-                            selectService("Kadın Kuaför")
+                        ServiceButton(title: NSLocalizedString("Women's Hairdresser", comment: "Women's Hairdresser option"), backgroundColor: Color.pink) {
+                            selectService("Women's Hairdresser")
                         }
-                        ServiceButton(title: "Pet Kuaför", backgroundColor: Color.green) {
-                            selectService("Pet Kuaför")
+                        ServiceButton(title: NSLocalizedString("Pet Care", comment: "Pet Care option"), backgroundColor: Color.green) {
+                            selectService("Pet Care")
                         }
-                        ServiceButton(title: "Araba Yıkama", backgroundColor: Color.red) {
-                            selectService("Araba Yıkama")
+                        ServiceButton(title: NSLocalizedString("Car Wash", comment: "Car Wash option"), backgroundColor: Color.red) {
+                            selectService("Car Wash")
                         }
-                        ServiceButton(title: "Çocuk Kuaför", backgroundColor: Color.orange) {
-                            selectService("Çocuk Kuaför")
+                        ServiceButton(title: NSLocalizedString("Skin Care", comment: "Skin Care option"), backgroundColor: Color.orange) {
+                            selectService("Skin Care")
                         }
-                        ServiceButton(title: "Spa ve Masaj", backgroundColor: Color.purple) {
-                            selectService("Spa ve Masaj")
+                        ServiceButton(title: NSLocalizedString("Spa and Massage", comment: "Spa and Massage option"), backgroundColor: Color.purple) {
+                            selectService("Spa and Massage")
                         }
-                        ServiceButton(title: "Tırnak Bakımı", backgroundColor: Color.cyan) {
-                            selectService("Tırnak Bakımı")
-                        }
-                        ServiceButton(title: "Cilt Bakımı", backgroundColor: Color.yellow) {
-                            selectService("Cilt Bakımı")
+                        ServiceButton(title: NSLocalizedString("Nail Care", comment: "Nail Care option"), backgroundColor: Color.cyan) {
+                            selectService("Nail Care")
                         }
                     }
                 }

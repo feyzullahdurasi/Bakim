@@ -11,7 +11,9 @@ import SwiftUI
 struct BakimApp: App {
     var body: some Scene {
         WindowGroup {
-            SplashView()
+            LocalizedViewWrapper {
+                SplashView()
+            }
         }
     }
 }

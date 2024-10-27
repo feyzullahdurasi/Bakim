@@ -16,7 +16,7 @@ struct ServiceDetailView: View {
     @State private var isReservationActive = false
     
     let barberId: Int
-    let services = ["Saç Kesimi": 100, "Sakal Tıraşı": 50, "Saç Boyama": 200]
+    let services = ["Haircut": 100, "Beard Shave": 50, "Hair Dyeing": 200]
     let availableHours = (9...18).map { String(format: "%02d:00", $0) }
     
     var body: some View {
@@ -37,9 +37,9 @@ struct ServiceDetailView: View {
             viewModel.fetchBarberData(barberId: barberId)
         }
         .alert(isPresented: $viewModel.showAlert) {
-            Alert(title: Text("Bilgi"), message: Text(viewModel.alertMessage), dismissButton: .default(Text("Tamam")))
+            Alert(title: Text("Information"), message: Text(viewModel.alertMessage), dismissButton: .default(Text("Ok")))
         }
-        .navigationTitle("Servis Detayları")
+        .navigationTitle("Service Details")
         .navigationBarTitleDisplayMode(.inline)
         
         .navigationDestination(isPresented: $isReservationActive) {
@@ -69,7 +69,7 @@ struct ServiceDetailView: View {
     
     private var servicesSection: some View {
         VStack(alignment: .leading) {
-            Text("Hizmetler")
+            Text("Services")
                 .font(.headline)
             ForEach(services.keys.sorted(), id: \.self) { service in
                 Toggle(service, isOn: Binding(
@@ -88,9 +88,9 @@ struct ServiceDetailView: View {
     
     private var dateTimeSection: some View {
         VStack(alignment: .leading) {
-            DatePicker("Tarih Seç", selection: $selectedDate, in: Date()..., displayedComponents: .date)
+            DatePicker("Select Date", selection: $selectedDate, in: Date()..., displayedComponents: .date)
             
-            Picker("Saat Seç", selection: $selectedTime) {
+            Picker("Select Time", selection: $selectedTime) {
                 ForEach(availableHours, id: \.self) { hour in
                     Text(hour).tag(hour)
                 }
@@ -104,11 +104,11 @@ struct ServiceDetailView: View {
     }
     
     private var bookAppointmentButton: some View {
-        Button("Randevu Al") {
+        Button("Make an Appointment") {
             if totalPrice > 0 {
                 isReservationActive = true // Trigger navigation to ReservationView
             } else {
-                viewModel.alertMessage = "Lütfen en az bir hizmet seçin."
+                viewModel.alertMessage = "Please select at least one service."
                 viewModel.showAlert = true
             }
         }
@@ -120,7 +120,7 @@ struct ServiceDetailView: View {
     
     private var commentsSection: some View {
         VStack(alignment: .leading) {
-            Text("Yorumlar")
+            Text("Comments")
                 .font(.headline)
             ForEach(viewModel.comments, id: \.id) { comment in
                 VStack(alignment: .leading) {
@@ -136,15 +136,15 @@ struct ServiceDetailView: View {
     
     private var addCommentSection: some View {
         HStack {
-            TextField("Yorum ekle", text: $newComment)
-            Button("Ekle") {
+            TextField("Add comment", text: $newComment)
+            Button("Add") {
                 addComment()
             }
         }
     }
     
     private var shareButton: some View {
-        Button("Paylaş") {
+        Button("Share") {
             shareBarberDetails()
         }
         .padding()
@@ -167,12 +167,12 @@ struct ServiceDetailView: View {
     
     private func addComment() {
         guard !newComment.isEmpty else { return }
-        viewModel.addComment(Comment(id: UUID(), userName: "Yeni Kullanıcı", text: newComment))
+        viewModel.addComment(Comment(id: UUID(), userName: "New User", text: newComment))
         newComment = ""
     }
     
     private func shareBarberDetails() {
-        let shareText = "Kuaför Detayları:\nKuaför: \(viewModel.barber?.barberName ?? "")\nYer: \(viewModel.barber?.localeName ?? "")\nToplam Ücret: \(totalPrice)₺"
+        let shareText = "Hairdresser Details:\nHairdresser: \(viewModel.barber?.barberName ?? "deneme kuafor")\nLocation: \(viewModel.barber?.localeName ?? "")\nTotal Price: \(totalPrice)₺"
         let activityViewController = UIActivityViewController(activityItems: [shareText], applicationActivities: nil)
         
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -216,8 +216,8 @@ class BarberDetailViewModel: ObservableObject {
     private func scheduleReminder(date: String, time: String) {
         // iOS'ta yerel bildirim planlaması
         let content = UNMutableNotificationContent()
-        content.title = "Randevu Hatırlatıcı"
-        content.body = "Randevunuz 2 saat içinde!"
+        content.title = "Appointment Reminder"
+        content.body = "Your appointment is in 2 hours!"
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd/MM/yyyy HH:mm"

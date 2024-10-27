@@ -52,7 +52,7 @@ class AuthService {
             if email == "1" && password == "1" {
                 completion(true, nil) // Başarılı giriş
             } else {
-                completion(false, NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Geçersiz kullanıcı adı veya şifre."]))
+                completion(false, NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Invalid username or password."]))
             }
         }
     }

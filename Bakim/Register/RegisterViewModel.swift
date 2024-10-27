@@ -26,12 +26,12 @@ class RegisterViewModel: ObservableObject {
               !email.isEmpty,
               !password.isEmpty,
               password == rePassword else {
-            errorMessage = "Lütfen tüm alanları doğru doldurduğunuzdan emin olun."
+            errorMessage = "Please make sure you have filled out all fields correctly."
             return
         }
 
         // Kayıt işlemi (örneğin veritabanına kullanıcı kaydetme)
-        print("Kayıt başarılı.")
+        print("Registration successful.")
         isRegistered = true
     }
 }
@@ -41,7 +41,7 @@ struct ServicesSelectionView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("Hizmetler")
+            Text("Services")
                 .font(.headline)
                 .padding(.bottom, 4)
 
@@ -67,8 +67,8 @@ struct ServicesSelectionView: View {
     }
     
     private let serviceOptions = [
-        "Erkek Kuaför", "Kadın Kuaför", "Pet Kuaför", "Araba Yıkama",
-        "Çocuk Kuaför", "Spa ve Masaj", "Tırnak Bakımı", "Cilt Bakımı"
+        "Men's Hairdresser", "Women's Hairdresser", "Pet Care", "Car Wash",
+        "Skin Care", "Spa and Massage", "Nail Care"
     ]
 }
 

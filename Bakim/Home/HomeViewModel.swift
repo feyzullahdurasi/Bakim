@@ -59,11 +59,11 @@ class HomeViewModel: ObservableObject {
 
     func getLastRefreshTime() -> String {
         guard let lastRefreshTime = PSharedPreferences.shared.getTime() else {
-            return "Henüz yenileme yapılmadı"
+            return "No renewal yet"
         }
         let date = Date(timeIntervalSince1970: lastRefreshTime)
         let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM.yyyy HH:mm:ss"
-        return "Son yenileme: " + formatter.string(from: date)
+        return "Last update: " + formatter.string(from: date)
     }
 }
