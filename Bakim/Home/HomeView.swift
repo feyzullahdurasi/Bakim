@@ -61,7 +61,7 @@ struct HomeView: View {
                         .padding()
                 }
             }
-            .navigationTitle(viewModel.selectedServiceType ?? "Services")
+            .navigationTitle(localizedServiceType)
         }
         .onAppear {
             if viewModel.services.isEmpty {
@@ -79,6 +79,10 @@ struct HomeView: View {
             }
         }
         return "https://example.com/placeholder.jpg"
+    }
+    
+    var localizedServiceType: String {
+        NSLocalizedString(viewModel.selectedServiceType ?? "Services", comment: "")
     }
 }
 

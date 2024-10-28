@@ -10,7 +10,7 @@ import SwiftUI
 import Combine
 
 // LocalizedBundle implementation
-final class LocalizedBundle: Bundle {
+final class LocalizedBundle: Bundle, @unchecked Sendable {
     override func localizedString(forKey key: String, value: String?, table tableName: String?) -> String {
         guard let bundle = objc_getAssociatedObject(self, &bundleKey) as? Bundle else {
             return super.localizedString(forKey: key, value: value, table: tableName)

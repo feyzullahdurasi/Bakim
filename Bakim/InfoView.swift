@@ -80,6 +80,7 @@ struct InfoView: View {
         viewModel.refreshData(serviceType: serviceType)
         navigateToMainTab = true
     }
+    
 }
 
 // Reusable service button component

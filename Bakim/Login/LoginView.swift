@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LoginView: View {
     @StateObject private var viewModel = LoginViewModel()
+    @State private var showLoadingOverlay = false
 
     var body: some View {
         NavigationStack {
@@ -17,13 +18,20 @@ struct LoginView: View {
                 
                 VStack(spacing: 16) {
                     TextField("Email", text: $viewModel.email)
+                        .autocapitalization(.none)
                         .padding()
                         .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
                         .padding(.top, 12)
                     
                     SecureField("Password", text: $viewModel.password)
+                        .autocapitalization(.none)
                         .padding()
                         .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
+                    
+                    if let errorMessage = viewModel.errorMessage {
+                        Text(errorMessage)
+                            .foregroundColor(.red)
+                    }
                     
                     Button(action: viewModel.login) {
                         Text("Sign In")
@@ -59,10 +67,6 @@ struct LoginView: View {
                     }
                     .padding(.top, 12)
                     
-                    if let errorMessage = viewModel.errorMessage {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
-                    }
                 }
                 .padding()
                 .background(Color.white)
@@ -71,7 +75,11 @@ struct LoginView: View {
                 .padding(.horizontal, 12)
                 
                 .navigationDestination(isPresented: $viewModel.isLoggedIn) {
-                    InfoView() // Navigate to InfoView after login
+                    if viewModel.currentUser?.userType == .businessOwner {
+                        BusinessOwnerView()
+                    } else {
+                        InfoView()
+                    }
                 }
             }
             .background(Color.gray.opacity(0.1).edgesIgnoringSafeArea(.all))

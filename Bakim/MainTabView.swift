@@ -17,7 +17,6 @@ struct MainTabView: View {
             HomeView(viewModel: viewModel)
                 .tabItem {
                     Image(systemName: "house.fill")
-                    Text("Home")
                 }
                 .tag(0)
 
@@ -25,7 +24,6 @@ struct MainTabView: View {
             MapsView()
                 .tabItem {
                     Image(systemName: "map.fill")
-                    Text("Maps")
                 }
                 .tag(1)
 
@@ -33,7 +31,6 @@ struct MainTabView: View {
             SettingsView()
                 .tabItem {
                     Image(systemName: "gearshape.fill")
-                    Text("Settings")
                 }
                 .tag(2)
         }

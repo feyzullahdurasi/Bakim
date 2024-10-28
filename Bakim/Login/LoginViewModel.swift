@@ -8,54 +8,96 @@
 import Foundation
 import Combine
 
+// UserType enum'u
+enum UserType: String {
+    case regular = "regular"
+    case businessOwner = "businessOwner"
+}
+
+// User model
+struct User {
+    let email: String
+    let userType: UserType
+}
+
+// AuthService güncelleme
+class AuthService {
+    func login(email: String, password: String, completion: @escaping (Result<User, Error>) -> Void) {
+        DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+            // Simüle edilmiş kullanıcı kontrolleri
+            switch (email, password) {
+            case ("1", "1"):
+                let user = User(email: email, userType: .regular)
+                completion(.success(user))
+            case ("2", "2"):
+                let user = User(email: email, userType: .businessOwner)
+                completion(.success(user))
+            default:
+                completion(.failure(NSError(domain: "", code: 401,
+                    userInfo: [NSLocalizedDescriptionKey: "Invalid credentials"])))
+            }
+        }
+    }
+    
+    func loginWithGoogle(completion: @escaping (Result<User, Error>) -> Void) {
+        // Google Sign In işlemleri burada yapılacak
+        // Simülasyon için direkt regular user döndürüyoruz
+        DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+            let user = User(email: "google@gmail.com", userType: .regular)
+            completion(.success(user))
+        }
+    }
+}
+
+// LoginViewModel güncelleme
 class LoginViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var password: String = ""
     @Published var isLoggedIn: Bool = false
     @Published var errorMessage: String? = nil
+    @Published var currentUser: User? = nil
+    @Published var isLoading: Bool = false
     
     private let authService = AuthService()
     
-    // Giriş yapma fonksiyonu
     func login() {
-        // Temel doğrulama
         guard !email.isEmpty, !password.isEmpty else {
             errorMessage = "E-posta ve şifre boş olamaz."
             return
         }
         
-        // API üzerinden giriş yapma
-        authService.login(email: email, password: password) { success, error in
+        isLoading = true
+        authService.login(email: email, password: password) { [weak self] result in
             DispatchQueue.main.async {
-                if success {
-                    self.isLoggedIn = true
-                } else {
-                    self.errorMessage = error?.localizedDescription ?? "Giriş yaparken bir hata oluştu."
+                self?.isLoading = false
+                switch result {
+                case .success(let user):
+                    self?.currentUser = user
+                    self?.isLoggedIn = true
+                    UserDefaults.standard.setValue(user.userType.rawValue, forKey: "userType")
+                    UserDefaults.standard.setValue(user.email, forKey: "userEmail")
+                case .failure(let error):
+                    self?.errorMessage = error.localizedDescription
                 }
             }
         }
     }
     
-    // Google ile giriş yapma fonksiyonu
     func loginWithGoogle() {
-        // Burada Google ile giriş mantığını ekleyin
-        // Örneğin, Google Sign-In SDK'sını kullanarak giriş yapabilirsiniz
-    }
-}
-
-// Örnek bir authentication service
-class AuthService {
-    func login(email: String, password: String, completion: @escaping (Bool, Error?) -> Void) {
-        // Burada API çağrısını yaparak kullanıcıyı doğrulama işlemi yapılacak
-        // Simulasyon için bir gecikme ekleyelim
-        DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
-            if email == "1" && password == "1" {
-                completion(true, nil) // Başarılı giriş
-            } else {
-                completion(false, NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Invalid username or password."]))
+        isLoading = true
+        authService.loginWithGoogle { [weak self] result in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                switch result {
+                case .success(let user):
+                    self?.currentUser = user
+                    self?.isLoggedIn = true
+                    UserDefaults.standard.setValue(user.userType.rawValue, forKey: "userType")
+                    UserDefaults.standard.setValue(user.email, forKey: "userEmail")
+                case .failure(let error):
+                    self?.errorMessage = error.localizedDescription
+                }
             }
         }
     }
 }
-
-

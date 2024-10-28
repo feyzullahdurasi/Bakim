@@ -52,3 +52,20 @@ struct ThemeChangeView: View {
 #Preview {
     ThemeChangeView()
 }
+
+enum Theme : String, CaseIterable {
+    case systemDefault = "default"
+    case light = "light"
+    case dark = "dark"
+    
+    var colorSheme: ColorScheme? {
+        switch self {
+        case .systemDefault:
+            return nil
+        case .light:
+            return .light
+        case .dark:
+            return .dark
+        }
+    }
+}
