@@ -5,26 +5,42 @@
 //  Created by Feyzullah Durası on 16.10.2024.
 //
 
+//
+//  ServiceDetailViewModel.swift
+//  Bakim
+//
+//  Created by Feyzullah Durası on 16.10.2024.
+//
+
 import Foundation
 import Combine
 import UserNotifications
 
 class ServiceDetailViewModel: ObservableObject {
-    @Published var barber: Barber?
-    @Published var comments: [Comment] = []
+    @Published var service: ServiceEntity?
+    @Published var userComments: [UserComment] = []
     @Published var showAlert = false
     @Published var alertMessage = ""
     
     private let apiService = APIService()
     private var cancellables = Set<AnyCancellable>()
     
-    func fetchBarberData(barberId: Int) {
+    func fetchServiceData(serviceId: Int) {
         // Simulating an API call
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.barber = Barber(id: barberId, barberName: "Ornek Kuafor", localeName: "Tuzla Merkez", barberImage: "https://example.com/image.jpg")
-            self.comments = [
-                Comment(id: UUID(), userName: "Ahmet", text: "Hizmet mükemmeldi!"),
-                Comment(id: UUID(), userName: "Mehmet", text: "Çok memnun kaldım.")
+            self.service = ServiceEntity(
+                id: serviceId,
+                serviceName: "Example Service",
+                localeName: "Tuzla Merkez",
+                carbohydrateContent: "10g",
+                rating: "4.5",
+                comment: "Excellent service!",
+                serviceImage: "https://example.com/image.jpg"
+            )
+            
+            self.userComments = [
+                UserComment(username: "Ahmet", commentText: "Hizmet mükemmeldi!"),
+                UserComment(username: "Mehmet", commentText: "Çok memnun kaldım.")
             ]
         }
     }
@@ -38,8 +54,8 @@ class ServiceDetailViewModel: ObservableObject {
         }
     }
     
-    func addComment(_ comment: Comment) {
-        comments.append(comment)
+    func addUserComment(_ comment: UserComment) {
+        userComments.append(comment)
     }
     
     private func scheduleReminder(date: String, time: String) {
@@ -59,4 +75,3 @@ class ServiceDetailViewModel: ObservableObject {
         }
     }
 }
-

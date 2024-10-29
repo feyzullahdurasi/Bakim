@@ -13,6 +13,8 @@ struct SettingsView: View {
     @StateObject private var languageManager = LanguageManager.shared
     @State private var changeTheme: Bool = false
     @AppStorage("userTheme") private var userTheme: Theme = .systemDefault
+    @State private var isBusinessOwner = true
+    @State private var isSetInfo = false
     
     let languages = ["Turkish", "English", "Deutsch", "French"]
     
@@ -56,9 +58,16 @@ struct SettingsView: View {
                     }
                 }
                 
-                Section(header: Text("Exit")) {
-                    Button("Update User Information") {
+                if isBusinessOwner {
+                    // Business Owner Specific Settings
+                    Section(header: Text("Business Settings")) {
                         
+                    }
+                }
+                
+                Section(header: Text("Exit")) {
+                    NavigationLink( destination: SetUserInfoView(fullName: .constant("asdf"), email: .constant("asdf"), businessName: .constant("asdf"), location: .constant("asdf"))) {
+                        Text("Update User Information")
                     }
                     Button("Log Out") {
                         

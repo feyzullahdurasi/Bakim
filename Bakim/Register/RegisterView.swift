@@ -43,6 +43,7 @@ struct RegisterView: View {
                         .cornerRadius(10)
                 }
                 .padding(.top)
+                
 
                 // Error message
                 if let errorMessage = viewModel.errorMessage {

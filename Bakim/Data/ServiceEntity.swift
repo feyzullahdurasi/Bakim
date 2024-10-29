@@ -8,6 +8,7 @@
 import Foundation
 import CoreData
 
+
 struct ServiceEntity: Identifiable, Codable {
     var id: Int?
     var serviceName: String?
@@ -41,5 +42,12 @@ struct UserComment: Identifiable, Codable {
     var id = UUID()
     var username: String
     var commentText: String
+}
+
+struct Location: Identifiable {
+    let id = UUID()
+    let latitude: Double
+    let longitude: Double
+    let name: String
 }
 

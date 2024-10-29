@@ -57,8 +57,8 @@ struct BusinessOwnerView: View {
                         Button("Manage Services") {
                             // Implement service management view
                         }
-                        Button("Customer Feedback") {
-                            // Implement feedback view
+                        NavigationLink( destination: FeedbackView(viewModel: FeedbackViewModel())) {
+                            Text("Customer Feedback")
                         }
                     }
                 }
