@@ -14,7 +14,7 @@ class HomeViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var hasError = false
     @Published var selectedServiceType: ServiceType?
-    
+    @Published var error: APIError?
     
     private var timer: AnyCancellable?
     
@@ -25,6 +25,7 @@ class HomeViewModel: ObservableObject {
     func refreshData() {
         isLoading = true
         hasError = false
+        error = nil
         
         // Simulating network delay with sample data
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
@@ -43,6 +44,7 @@ class HomeViewModel: ObservableObject {
                 self.hasError = false
             } else {
                 self.hasError = true
+                self.error = .invalidData
             }
             
             self.isLoading = false

@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct HomeView: View {
-    @ObservedObject var viewModel: HomeViewModel
-    
+    @ObservedObject var viewModel = HomeViewModel()
     @State private var isDetailView = false
     @State private var showSearchView = false
     @State private var showDestinationSearchView = false
     @State private var searchWord = ""
+    @State private var showErrorView = false
+    @State private var error: APIError?
     
     var body: some View {
         NavigationView {
@@ -70,10 +71,22 @@ struct HomeView: View {
                     ServiceDetailView(service: service, business: business)
                 }
             }
+            .sheet(isPresented: $showErrorView) {
+                if let error = error {
+                    UserErrorView(Error: error, isPresented: $showErrorView)
+                }
+            }
+            .onAppear {
+                viewModel.refreshData()
+            }
+            .onChange(of: viewModel.error) { newError, _ in
+                if let newError = newError {
+                    error = newError
+                    showErrorView = true
+                }
+            }
         }
-        .onAppear {
-            viewModel.refreshData()
-        }
+        
     }
     
     private func getServicePriceRange(_ service: Service) -> String {

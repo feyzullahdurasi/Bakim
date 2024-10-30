@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct UserErrorView: View {
-    let error: APIService.APIError
+    let Error: APIError
     @Binding var isPresented: Bool
     @Namespace var animation
     
@@ -18,7 +18,7 @@ struct UserErrorView: View {
                 .font(.title)
                 .fontWeight(.bold)
             
-            Text(error.userErrorMessage)
+            Text(Error.userErrorMessage)
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
@@ -42,5 +42,5 @@ struct UserErrorView: View {
     }
 }
 #Preview {
-    UserErrorView(error: .invalidURL, isPresented: .constant(true))
+    UserErrorView(Error: .invalidURL, isPresented: .constant(true))
 }

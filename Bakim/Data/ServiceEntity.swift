@@ -38,20 +38,20 @@ struct ServiceEntity: Identifiable, Codable {
     }
 }
 
-struct UserComment {
+struct UserComment: Decodable {
     var username: String
     var rating: Int
     var commentText: String?
 }
 
-struct Location: Identifiable {
-    let id = UUID()
+struct Location: Identifiable, Decodable {
+    var id = UUID()
     let latitude: Double
     let longitude: Double
     let adress: String
 }
 
-struct User: Identifiable {
+struct User: Identifiable, Decodable {
     let id: Int
     let username: String
     let password: String
@@ -60,7 +60,7 @@ struct User: Identifiable {
     let reservations: [Reservation]
 }
 
-struct BankCard: Identifiable {
+struct BankCard: Identifiable, Decodable {
     let id: Int
     let cardHolderName: String
     let cardNumber: String
@@ -68,12 +68,12 @@ struct BankCard: Identifiable {
     let cardCVC: String
 }
 
-struct CardExpirationDate {
+struct CardExpirationDate: Decodable {
     let cardExpirationMonth: Int
     let cardExpirationYear: Int
 }
 
-struct Business {
+struct Business: Decodable {
     let user: [User]
     let location: [Location]
     let comments: [UserComment]
@@ -86,7 +86,7 @@ struct Business {
     var services: [Service]
 }
 
-enum ServiceType: CustomStringConvertible, CaseIterable {
+enum ServiceType: CustomStringConvertible, CaseIterable, Decodable {
     case menHairdresser, womenHairdresser, petCare, carWash, skinCare, spaMassage, nailCare
 
     var description: String {
@@ -102,12 +102,12 @@ enum ServiceType: CustomStringConvertible, CaseIterable {
     }
 }
 
-struct Service {
+struct Service: Decodable {
     var serviceType: ServiceType
     var serviceFeature: [ServiceFeature]
 }
 
-struct ServiceFeature: Hashable {
+struct ServiceFeature: Hashable, Decodable {
     var name: String
     var price: Int
     var duration: Int
@@ -158,8 +158,8 @@ let serviceFeatures: [ServiceType: [ServiceFeature]] = [
     ]
 ]
 
-struct Reservation: Identifiable {
-    let id = UUID()
+struct Reservation: Identifiable, Decodable {
+    var id = UUID()
     var service: Service
     let business: Business
     let date: Date
@@ -167,20 +167,22 @@ struct Reservation: Identifiable {
     let status: ReservationStatus
 }
 
-enum ReservationStatus: String {
+enum ReservationStatus: String, Decodable{
     case pending = "Pending"
     case confirmed = "Confirmed"
     case canceled = "Canceled"
 }
 
-enum UserRole {
+enum UserRole: Decodable {
     case user(User)
     case business(Business)
 }
 
-struct Bakim {
+struct Bakim: Decodable{
     let user: UserRole
 }
+
+
 
 
 struct MockData {
