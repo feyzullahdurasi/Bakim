@@ -27,26 +27,10 @@ struct InfoView: View {
 
                     // Buttons for services
                     VStack(spacing: 16) {
-                        ServiceButton(title: NSLocalizedString("Men's Hairdresser", comment: "Men's Hairdresser option"), backgroundColor: Color.blue) {
-                            selectService("Men's Hairdresser")
-                        }
-                        ServiceButton(title: NSLocalizedString("Women's Hairdresser", comment: "Women's Hairdresser option"), backgroundColor: Color.pink) {
-                            selectService("Women's Hairdresser")
-                        }
-                        ServiceButton(title: NSLocalizedString("Pet Care", comment: "Pet Care option"), backgroundColor: Color.green) {
-                            selectService("Pet Care")
-                        }
-                        ServiceButton(title: NSLocalizedString("Car Wash", comment: "Car Wash option"), backgroundColor: Color.red) {
-                            selectService("Car Wash")
-                        }
-                        ServiceButton(title: NSLocalizedString("Skin Care", comment: "Skin Care option"), backgroundColor: Color.orange) {
-                            selectService("Skin Care")
-                        }
-                        ServiceButton(title: NSLocalizedString("Spa and Massage", comment: "Spa and Massage option"), backgroundColor: Color.purple) {
-                            selectService("Spa and Massage")
-                        }
-                        ServiceButton(title: NSLocalizedString("Nail Care", comment: "Nail Care option"), backgroundColor: Color.cyan) {
-                            selectService("Nail Care")
+                        ForEach(ServiceType.allCases, id: \.self) { serviceType in
+                            ServiceButton(title: serviceType.description, backgroundColor: getColor(for: serviceType)) {
+                                selectService(serviceType)
+                            }
                         }
                     }
                 }
@@ -54,12 +38,12 @@ struct InfoView: View {
             }
             .background(Color(UIColor.systemGray6))
             .navigationDestination(isPresented: $navigateToMainTab) {
-                MainTabView(viewModel: viewModel)
+                MainTabView(viewModel: viewModel) // Ensure this view is correctly initialized
             }
         }
         .overlay(
             Group {
-                if viewModel.serviceLoading {
+                if viewModel.isLoading {
                     ProgressView()
                         .scaleEffect(1.5)
                         .padding()
@@ -67,20 +51,31 @@ struct InfoView: View {
             }
         )
         .alert(isPresented: Binding<Bool>(
-            get: { viewModel.serviceError },
-            set: { _ in viewModel.serviceError = false }
+            get: { viewModel.hasError },
+            set: { _ in viewModel.hasError = false }
         )) {
-            Alert(title: Text("Hata"), message: Text("Veriler yüklenirken bir hata oluştu. Lütfen tekrar deneyin."), dismissButton: .default(Text("Tamam")))
+            Alert(title: Text("Error"), message: Text("An error occurred while loading data. Please try again."), dismissButton: .default(Text("OK")))
         }
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
     }
     
-    private func selectService(_ serviceType: String) {
-        viewModel.refreshData(serviceType: serviceType)
+    private func selectService(_ serviceType: ServiceType) {
+        //viewModel.refreshData(serviceType: serviceType)
         navigateToMainTab = true
     }
     
+    private func getColor(for serviceType: ServiceType) -> Color {
+        switch serviceType {
+        case .menHairdresser: return .blue
+        case .womenHairdresser: return .pink
+        case .petCare: return .green
+        case .carWash: return .red
+        case .skinCare: return .orange
+        case .spaMassage: return .purple
+        case .nailCare: return .cyan
+        }
+    }
 }
 
 // Reusable service button component

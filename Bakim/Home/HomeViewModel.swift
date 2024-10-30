@@ -9,61 +9,68 @@ import Foundation
 import Combine
 
 class HomeViewModel: ObservableObject {
-    @Published var services: [ServiceEntity] = []
-    @Published var serviceLoading: Bool = false
-    @Published var serviceError: Bool = false
-    @Published var selectedServiceType: String?
-
-    private let apiService = APIService()
-    private var cancellables = Set<AnyCancellable>()
-
+    @Published var currentBusiness: Business?
+    @Published var selectedService: Service?
+    @Published var isLoading = false
+    @Published var hasError = false
+    @Published var selectedServiceType: ServiceType?
+    
+    
+    private var timer: AnyCancellable?
+    
     init() {
-        setupTimerForRefresh()
+        setupAutoRefresh()
     }
-
-    func refreshData(serviceType: String?) {
-        serviceLoading = true
-        serviceError = false
-        selectedServiceType = serviceType
-
-        apiService.fetchServices { [weak self] fetchedServices in
-            DispatchQueue.main.async {
-                self?.serviceLoading = false
-                if let services = fetchedServices {
-                    if let serviceType = serviceType {
-                        self?.services = services.filter { $0.serviceName == serviceType }
-                    } else {
-                        self?.services = services
-                    }
-                    self?.saveLastRefreshTime()
-                } else {
-                    self?.serviceError = true
+    
+    func refreshData() {
+        isLoading = true
+        hasError = false
+        
+        // Simulating network delay with sample data
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            guard let self = self else { return }
+            
+            // Using MockData for demonstration
+            if case .business(let business) = MockData.sampleData.user {
+                self.currentBusiness = business
+                
+                // Filter services if a specific type is selected
+                if let selectedType = self.selectedServiceType {
+                    let filteredServices = business.services.filter { $0.serviceType == selectedType }
+                    self.currentBusiness?.services = filteredServices
                 }
+                
+                self.hasError = false
+            } else {
+                self.hasError = true
             }
+            
+            self.isLoading = false
+            self.saveLastRefreshTime()
         }
     }
-
-    private func setupTimerForRefresh() {
-        Timer.publish(every: 300, on: .main, in: .common)
+    
+    private func setupAutoRefresh() {
+        timer = Timer.publish(every: 300, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
-                self?.refreshData(serviceType: self?.selectedServiceType)
+                self?.refreshData()
             }
-            .store(in: &cancellables)
     }
-
+    
     private func saveLastRefreshTime() {
         let currentTime = Date().timeIntervalSince1970
-        PSharedPreferences.shared.saveTime(currentTime)
+        UserDefaults.standard.set(currentTime, forKey: "lastRefreshTime")
     }
-
+    
     func getLastRefreshTime() -> String {
-        guard let lastRefreshTime = PSharedPreferences.shared.getTime() else {
-            return "No renewal yet"
+        let lastRefreshTime = UserDefaults.standard.double(forKey: "lastRefreshTime")
+        if lastRefreshTime > 0 {
+            let date = Date(timeIntervalSince1970: lastRefreshTime)
+            let formatter = DateFormatter()
+            formatter.dateFormat = "dd.MM.yyyy HH:mm:ss"
+            return "Last update: " + formatter.string(from: date)
         }
-        let date = Date(timeIntervalSince1970: lastRefreshTime)
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd.MM.yyyy HH:mm:ss"
-        return "Last update: " + formatter.string(from: date)
+        return "No renewal yet"
     }
 }

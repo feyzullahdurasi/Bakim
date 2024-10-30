@@ -28,65 +28,69 @@ struct HomeView: View {
                 
                 ScrollView {
                     LazyVStack(spacing: 16) {
-                        ForEach(viewModel.services) { service in
-                            ListingItemView(
-                                barberName: service.serviceName ?? "Unknown Service",
-                                location: service.localeName ?? "Unknown Location",
-                                rating: service.rating ?? "N/A",
-                                image: getImageSource(from: service.serviceImage)
-                            )
-                            .onTapGesture {
-                                isDetailView = true
+                        if let business = viewModel.currentBusiness {
+                            ForEach(business.services, id: \.serviceType) { service in
+                                ListingItemView(
+                                    barberName: service.serviceType.description,
+                                    location: business.BusinessAddress,
+                                    rating: getServicePriceRange(service),
+                                    image: getImageSource(from: business.BusinessImage)
+                                )
+                                .onTapGesture {
+                                    viewModel.selectedService = service
+                                    isDetailView = true
+                                }
                             }
                         }
                     }
                     .padding(.vertical)
                 }
                 .refreshable {
-                    viewModel.refreshData(serviceType: viewModel.selectedServiceType)
+                    viewModel.refreshData()
                 }
-                .opacity(viewModel.serviceLoading || viewModel.serviceError ? 0 : 1)
+                .opacity(viewModel.isLoading ? 0 : 1)
                 
-                if viewModel.serviceLoading {
+                if viewModel.isLoading {
                     ProgressView()
                         .scaleEffect(1.5)
                         .padding()
                 }
                 
-                if viewModel.serviceError {
-                    Text("Error! Try again!")
+                if viewModel.hasError {
+                    Text("Error loading services. Please try again!")
                         .font(.headline)
                         .foregroundColor(.red)
                         .multilineTextAlignment(.center)
                         .padding()
                 }
             }
-            .navigationTitle(localizedServiceType)
+            .navigationTitle(viewModel.selectedServiceType?.description ?? "All Services")
+            .sheet(isPresented: $isDetailView) {
+                if let service = viewModel.selectedService, let business = viewModel.currentBusiness {
+                    ServiceDetailView(service: service, business: business)
+                }
+            }
         }
         .onAppear {
-            if viewModel.services.isEmpty {
-                viewModel.refreshData(serviceType: viewModel.selectedServiceType)
-            }
+            viewModel.refreshData()
         }
     }
     
-    private func getImageSource(from serviceImage: String?) -> String {
-        if let image = serviceImage, !image.isEmpty {
-            if image.hasPrefix("http://") || image.hasPrefix("https://") {
-                return image
-            } else {
-                return "https://example.com/placeholder.jpg"
-            }
+    private func getServicePriceRange(_ service: Service) -> String {
+        let prices = service.serviceFeature.map { $0.price }
+        if let minPrice = prices.min(), let maxPrice = prices.max() {
+            return "\(minPrice)-\(maxPrice) USD"
+        }
+        return "Price varies"
+    }
+    
+    private func getImageSource(from businessImage: String) -> String {
+        if businessImage.hasPrefix("http://") || businessImage.hasPrefix("https://") {
+            return businessImage
         }
         return "https://example.com/placeholder.jpg"
     }
-    
-    var localizedServiceType: String {
-        NSLocalizedString(viewModel.selectedServiceType ?? "Services", comment: "")
-    }
 }
-
-
 
 #Preview {
     HomeView(viewModel: HomeViewModel())

@@ -9,23 +9,29 @@ import SwiftUI
 import MapKit
 
 struct ServiceDetailView: View {
-    @StateObject private var viewModel = ServiceDetailViewModel()
+    @StateObject private var viewModel: ServiceDetailViewModel
     @State private var selectedDate = Date()
     @State private var selectedTime = "09:00"
-    @State private var selectedServices: Set<String> = []
+    @State private var selectedFeatures: Set<ServiceFeature> = []
     @State private var newComment = ""
     @State private var isReservationActive = false
     
-    let serviceId: Int
-    let services: [String: Int] = ["Haircut": 100, "Beard Shave": 50, "Hair Dyeing": 200]
+    let service: Service
+    let business: Business
     let availableHours = (9...18).map { String(format: "%02d:00", $0) }
+    
+    init(service: Service, business: Business) {
+        self.service = service
+        self.business = business
+        _viewModel = StateObject(wrappedValue: ServiceDetailViewModel(service: service, business: business))
+    }
     
     var body: some View {
         VStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     serviceInfoSection
-                    servicesSection
+                    serviceFeaturesSection
                     dateTimeSection
                     locationSection
                     commentsSection
@@ -33,74 +39,93 @@ struct ServiceDetailView: View {
                 }
                 .padding()
             }
-            .onAppear {
-                viewModel.fetchServiceData(serviceId: serviceId)
-            }
-            .alert(isPresented: $viewModel.showAlert) {
-                Alert(title: Text("Information"), message: Text(viewModel.alertMessage), dismissButton: .default(Text("Ok")))
-            }
-            .navigationTitle("Service Details")
+            .navigationTitle(service.serviceType.description)
             .navigationBarTitleDisplayMode(.inline)
-            
-            .navigationDestination(isPresented: $isReservationActive) {
-                ReservationView(totalPrice: totalPrice, selectedDate: selectedDate, selectedTime: selectedTime)
+            .alert(isPresented: $viewModel.showAlert) {
+                Alert(
+                    title: Text("Information"),
+                    message: Text(viewModel.alertMessage),
+                    dismissButton: .default(Text("Ok"))
+                )
             }
+            .navigationDestination(isPresented: $isReservationActive) {
+                ReservationView(
+                    totalPrice: totalPrice,
+                    selectedDate: selectedDate,
+                    selectedTime: selectedTime
+                )
+            }
+            
             Spacer()
             Divider()
-            HStack {
-                totalPriceSection
-                Spacer()
-                bookAppointmentButton
-            }
-            .padding(.horizontal)
-            .padding(.bottom)
+            bottomBar
         }
     }
     
     private var serviceInfoSection: some View {
-        VStack() {
-            if let imageUrl = viewModel.service?.serviceImage {
-                AsyncImage(url: URL(string: imageUrl)) { image in
-                    image.resizable()
-                } placeholder: {
-                    Color.gray
-                }
-                .frame(height: 200)
-                .clipShape(RoundedRectangle(cornerRadius: 5))
+        VStack {
+            AsyncImage(url: URL(string: business.BusinessImage)) { image in
+                image.resizable()
+            } placeholder: {
+                Color.gray
             }
+            .frame(height: 200)
+            .clipShape(RoundedRectangle(cornerRadius: 5))
+            
             HStack {
                 VStack(alignment: .leading) {
-                    Text(viewModel.service?.serviceName ?? "")
+                    Text(business.BusinessName)
                         .font(.title)
-                    Text(viewModel.service?.localeName ?? "")
+                    Text(business.BusinessAddress)
+                        .font(.subheadline)
+                }
+                Spacer()
+                VStack(alignment: .trailing) {
+                    Text(business.BusinessPrice)
+                        .font(.headline)
+                    Text(business.BusinessHours)
                         .font(.subheadline)
                 }
             }
         }
     }
     
-    private var servicesSection: some View {
+    private var serviceFeaturesSection: some View {
         VStack(alignment: .leading) {
-            Text("Services")
+            Text("Available Services")
                 .font(.headline)
-            ForEach(services.keys.sorted(), id: \.self) { service in
-                Toggle(service, isOn: Binding(
-                    get: { selectedServices.contains(service) },
+            
+            ForEach(service.serviceFeature, id: \.name) { feature in
+                Toggle(isOn: Binding(
+                    get: { selectedFeatures.contains(feature) },
                     set: { isSelected in
                         if isSelected {
-                            selectedServices.insert(service)
+                            selectedFeatures.insert(feature)
                         } else {
-                            selectedServices.remove(service)
+                            selectedFeatures.remove(feature)
                         }
                     }
-                ))
+                )) {
+                    HStack {
+                        Text(feature.name)
+                        Spacer()
+                        Text("\(feature.price)₺ (\(feature.duration) min)")
+                            .foregroundColor(.gray)
+                    }
+                }
             }
         }
     }
     
     private var dateTimeSection: some View {
         VStack(alignment: .leading) {
-            DatePicker("Select Date", selection: $selectedDate, in: Date()..., displayedComponents: .date)
+            Text("Select Date & Time")
+                .font(.headline)
+            
+            DatePicker("Select Date",
+                      selection: $selectedDate,
+                      in: Date()...,
+                      displayedComponents: .date)
             
             Picker("Select Time", selection: $selectedTime) {
                 ForEach(availableHours, id: \.self) { hour in
@@ -110,89 +135,105 @@ struct ServiceDetailView: View {
         }
     }
     
-    // 40.869497, 29.328127
     private var locationSection: some View {
         VStack(alignment: .leading) {
             Text("Location")
                 .font(.headline)
             
-            
-            let location = Location(latitude: 40.869497, longitude: 29.328127, name: "Barber Shop")
-            
-            Map(coordinateRegion: .constant(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude), span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))), interactionModes: [])
+            if let location = business.location.first {
+                Map(coordinateRegion: .constant(MKCoordinateRegion(
+                    center: CLLocationCoordinate2D(
+                        latitude: location.latitude,
+                        longitude: location.longitude
+                    ),
+                    span: MKCoordinateSpan(
+                        latitudeDelta: 0.01,
+                        longitudeDelta: 0.01
+                    )
+                )), interactionModes: [])
                 .frame(height: 200)
                 .cornerRadius(10)
-            
-            Text(location.name)
-                .font(.subheadline)
-                .padding(.top, 5)
+                
+                Text(location.adress)
+                    .font(.subheadline)
+                    .padding(.top, 5)
+            }
         }
     }
     
     private var commentsSection: some View {
         VStack(alignment: .leading) {
-            Text("Comments")
+            Text("Reviews")
                 .font(.headline)
-            ForEach(viewModel.userComments, id: \.id) { comment in
+            
+            ForEach(business.comments, id: \.username) { comment in
                 VStack(alignment: .leading) {
-                    Text(comment.username)
-                        .font(.subheadline)
-                        .fontWeight(.bold)
-                    Text(comment.commentText)
+                    HStack {
+                        Text(comment.username)
+                            .font(.subheadline)
+                            .bold()
+                        Spacer()
+                        Text("\(comment.rating)/5")
+                    }
+                    if let commentText = comment.commentText {
+                        Text(commentText)
+                            .font(.subheadline)
+                    }
                 }
-                .padding(.vertical, 5)
+                .padding(.vertical, 4)
+                Divider()
             }
         }
     }
     
     private var addCommentSection: some View {
-        HStack {
-            TextField("Add comment", text: $newComment)
-            Button("Add") {
-                addUserComment()
+        VStack(alignment: .leading) {
+            Text("Add Review")
+                .font(.headline)
+            HStack {
+                TextField("Write your review", text: $newComment)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                Button("Add") {
+                    viewModel.addUserComment(newComment)
+                    newComment = ""
+                }
+                .disabled(newComment.isEmpty)
             }
         }
     }
     
-    private var totalPriceSection: some View {
-        Text("Total: \(totalPrice)₺")
-            .font(.headline)
-    }
-    
-    private var bookAppointmentButton: some View {
-        Button("Make an Appointment") {
-            if totalPrice > 0 {
-                isReservationActive = true
-            } else {
-                viewModel.alertMessage = "Please select at least one service."
-                viewModel.showAlert = true
+    private var bottomBar: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text("Total Price")
+                    .font(.subheadline)
+                Text("\(totalPrice)₺")
+                    .font(.headline)
             }
+            
+            Spacer()
+            
+            Button {
+                if !selectedFeatures.isEmpty {
+                    isReservationActive = true
+                } else {
+                    viewModel.showAlert(message: "Please select at least one service")
+                }
+            } label: {
+                Text("Make Appointment")
+                    .padding()
+                    .background(selectedFeatures.isEmpty ? Color.gray : Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+            .disabled(selectedFeatures.isEmpty)
         }
         .padding()
-        .background(Color.blue)
-        .foregroundColor(.white)
-        .cornerRadius(10)
     }
     
     private var totalPrice: Int {
-        selectedServices.reduce(0) { $0 + (services[$1] ?? 0) }
-    }
-    
-    private func bookAppointment() {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd/MM/yyyy"
-        let formattedDate = dateFormatter.string(from: selectedDate)
-        
-        viewModel.bookAppointment(date: formattedDate, time: selectedTime, services: Array(selectedServices), totalPrice: totalPrice)
-    }
-    
-    private func addUserComment() {
-        guard !newComment.isEmpty else { return }
-        viewModel.addUserComment(UserComment(username: "New User", commentText: newComment))
-        newComment = ""
+        selectedFeatures.reduce(0) { $0 + $1.price }
     }
 }
 
-#Preview {
-    ServiceDetailView(serviceId: 1)
-}
+

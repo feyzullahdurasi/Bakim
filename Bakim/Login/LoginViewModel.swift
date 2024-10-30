@@ -15,22 +15,22 @@ enum UserType: String {
 }
 
 // User model
-struct User {
+struct User1 {
     let email: String
     let userType: UserType
 }
 
 // AuthService güncelleme
 class AuthService {
-    func login(email: String, password: String, completion: @escaping (Result<User, Error>) -> Void) {
+    func login(email: String, password: String, completion: @escaping (Result<User1, Error>) -> Void) {
         DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
             // Simüle edilmiş kullanıcı kontrolleri
             switch (email, password) {
             case ("1", "1"):
-                let user = User(email: email, userType: .regular)
+                let user = User1(email: email, userType: .regular)
                 completion(.success(user))
             case ("2", "2"):
-                let user = User(email: email, userType: .businessOwner)
+                let user = User1(email: email, userType: .businessOwner)
                 completion(.success(user))
             default:
                 completion(.failure(NSError(domain: "", code: 401,
@@ -39,11 +39,11 @@ class AuthService {
         }
     }
     
-    func loginWithGoogle(completion: @escaping (Result<User, Error>) -> Void) {
+    func loginWithGoogle(completion: @escaping (Result<User1, Error>) -> Void) {
         // Google Sign In işlemleri burada yapılacak
         // Simülasyon için direkt regular user döndürüyoruz
         DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
-            let user = User(email: "google@gmail.com", userType: .regular)
+            let user = User1(email: "google@gmail.com", userType: .regular)
             completion(.success(user))
         }
     }
@@ -55,7 +55,7 @@ class LoginViewModel: ObservableObject {
     @Published var password: String = ""
     @Published var isLoggedIn: Bool = false
     @Published var errorMessage: String? = nil
-    @Published var currentUser: User? = nil
+    @Published var currentUser: User1? = nil
     @Published var isLoading: Bool = false
     
     private let authService = AuthService()
