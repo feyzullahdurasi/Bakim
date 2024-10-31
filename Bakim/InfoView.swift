@@ -61,7 +61,8 @@ struct InfoView: View {
     }
     
     private func selectService(_ serviceType: ServiceType) {
-        //viewModel.refreshData(serviceType: serviceType)
+        viewModel.selectedServiceType = serviceType
+        viewModel.refreshData(serviceType: serviceType)
         navigateToMainTab = true
     }
     

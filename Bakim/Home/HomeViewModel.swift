@@ -22,7 +22,7 @@ class HomeViewModel: ObservableObject {
         setupAutoRefresh()
     }
     
-    func refreshData() {
+    func refreshData(serviceType: ServiceType? = nil) {
         isLoading = true
         hasError = false
         error = nil

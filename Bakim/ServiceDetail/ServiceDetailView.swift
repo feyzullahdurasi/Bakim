@@ -235,5 +235,3 @@ struct ServiceDetailView: View {
         selectedFeatures.reduce(0) { $0 + $1.price }
     }
 }
-
-

@@ -11,8 +11,9 @@ struct ListingItemView: View {
     var barberName: String
     var location: String
     var rating: String
-    var image: String
-
+    var bakim: Bakim?
+    var business: Business?
+    
     var body: some View {
         ZStack {
             // Background Card
@@ -21,32 +22,20 @@ struct ListingItemView: View {
                 .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)
             
             HStack(spacing: 16) {
-                // Barber Image
-                AsyncImage(url: URL(string: image)) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                    case .failure:
-                        Image(systemName: "person.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(.gray)
-                    @unknown default:
-                        Image(systemName: "person.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(.gray)
-                    }
+                
+                if let business = business {
+                    BakimRemoteImage(urlString: business.BusinessImage)
+                        .frame(width: 100, height: 100)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(Color.gray.opacity(0.3), lineWidth: 2))
+                        .shadow(radius: 5)
+                } else {
+                    // Placeholder image when no business is provided
+                    Circle()
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 100, height: 100)
                 }
-                .frame(width: 100, height: 100)
-                .clipShape(Circle())
-                .overlay(Circle().stroke(Color.gray.opacity(0.3), lineWidth: 2))
-                .shadow(radius: 5)
-
+                
                 // Barber Info (Name & Location)
                 VStack(alignment: .leading, spacing: 8) {
                     // Barber Name
@@ -54,7 +43,7 @@ struct ListingItemView: View {
                         .font(.title3)
                         .fontWeight(.bold)
                         .foregroundColor(.black)
-
+                    
                     // Location
                     HStack {
                         Image(systemName: "mappin.and.ellipse")
@@ -64,9 +53,9 @@ struct ListingItemView: View {
                             .foregroundColor(.gray)
                     }
                 }
-
+                
                 Spacer()
-
+                
                 // Rating Section
                 VStack {
                     Text(rating)
@@ -76,7 +65,7 @@ struct ListingItemView: View {
                         .background(Color.blue)
                         .cornerRadius(8)
                         .shadow(radius: 5)
-
+                    
                     Text("Rating")
                         .font(.caption)
                         .foregroundColor(.gray)
@@ -89,6 +78,3 @@ struct ListingItemView: View {
     }
 }
 
-#Preview {
-    ListingItemView(barberName: "Örnek Kuaför", location: "Örnek Lokasyon", rating: "4.5", image: "https://example.com/image.jpg")
-}

@@ -6,10 +6,12 @@
 //
 
 import Foundation
+import UIKit
 
 class APIService {
     
     static let shared = APIService()
+    private let cache = NSCache<NSString, UIImage>()
     
     static let baseURL = "https://raw.githubusercontent.com/atilsamancioglu/BTK20-JSONVeriSeti/master/"
     private let bakimURL = baseURL + "besinler.json"
@@ -49,6 +51,41 @@ class APIService {
         
         task.resume()
     }
+    func downloadImage(from urlString: String, completion: @escaping (UIImage?) -> Void) {
+            
+            let cacheKey = NSString(string: urlString)
+            
+            // Check cache for image
+            if let cachedImage = cache.object(forKey: cacheKey) {
+                completion(cachedImage)
+                return
+            }
+            
+            // Validate URL
+            guard let url = URL(string: urlString) else {
+                completion(nil)
+                return
+            }
+            
+            // Download image
+            let task = URLSession.shared.dataTask(with: url) { data, response, error in
+                if let _ = error {
+                    completion(nil)
+                    return
+                }
+                
+                guard let data = data, let image = UIImage(data: data) else {
+                    completion(nil)
+                    return
+                }
+                
+                // Cache the downloaded image
+                self.cache.setObject(image, forKey: cacheKey)
+                completion(image)
+            }
+            
+            task.resume()
+        }
 }
 
 enum APIError: Error {

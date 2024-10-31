@@ -34,8 +34,8 @@ struct HomeView: View {
                                 ListingItemView(
                                     barberName: service.serviceType.description,
                                     location: business.BusinessAddress,
-                                    rating: getServicePriceRange(service),
-                                    image: getImageSource(from: business.BusinessImage)
+                                    rating: getServicePriceRange(service)
+                                    
                                 )
                                 .onTapGesture {
                                     viewModel.selectedService = service
@@ -52,9 +52,7 @@ struct HomeView: View {
                 .opacity(viewModel.isLoading ? 0 : 1)
                 
                 if viewModel.isLoading {
-                    ProgressView()
-                        .scaleEffect(1.5)
-                        .padding()
+                    LoadingView()
                 }
                 
                 if viewModel.hasError {
@@ -86,7 +84,6 @@ struct HomeView: View {
                 }
             }
         }
-        
     }
     
     private func getServicePriceRange(_ service: Service) -> String {
@@ -95,13 +92,6 @@ struct HomeView: View {
             return "\(minPrice)-\(maxPrice) USD"
         }
         return "Price varies"
-    }
-    
-    private func getImageSource(from businessImage: String) -> String {
-        if businessImage.hasPrefix("http://") || businessImage.hasPrefix("https://") {
-            return businessImage
-        }
-        return "https://example.com/placeholder.jpg"
     }
 }
 
