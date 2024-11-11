@@ -9,10 +9,13 @@ import SwiftUI
 
 @main
 struct BakimApp: App {
+    @AppStorage("userTheme") private var userTheme: Theme = .systemDefault
+    
     var body: some Scene {
         WindowGroup {
             LocalizedViewWrapper {
                 SplashView()
+                    //.preferredColorScheme(userTheme.colorScheme)
             }
         }
     }

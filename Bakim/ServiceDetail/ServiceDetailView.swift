@@ -140,26 +140,30 @@ struct ServiceDetailView: View {
             Text("Location")
                 .font(.headline)
             
-            if let location = business.location.first {
+            // Ensure there's at least one location
+            if let location = business.location.first,
+               let latitude = location.latitude,
+               let longitude = location.longitude {
                 Map(coordinateRegion: .constant(MKCoordinateRegion(
-                    center: CLLocationCoordinate2D(
-                        latitude: location.latitude,
-                        longitude: location.longitude
-                    ),
-                    span: MKCoordinateSpan(
-                        latitudeDelta: 0.01,
-                        longitudeDelta: 0.01
-                    )
+                    center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
+                    span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
                 )), interactionModes: [])
                 .frame(height: 200)
                 .cornerRadius(10)
                 
+                // Ensure the address text is shown if it's available
                 Text(location.adress)
                     .font(.subheadline)
+                    .padding(.top, 5)
+            } else {
+                Text("Location not available.")
+                    .font(.subheadline)
+                    .foregroundColor(.red)
                     .padding(.top, 5)
             }
         }
     }
+
     
     private var commentsSection: some View {
         VStack(alignment: .leading) {
@@ -210,9 +214,7 @@ struct ServiceDetailView: View {
                 Text("\(totalPrice)₺")
                     .font(.headline)
             }
-            
             Spacer()
-            
             Button {
                 if !selectedFeatures.isEmpty {
                     isReservationActive = true

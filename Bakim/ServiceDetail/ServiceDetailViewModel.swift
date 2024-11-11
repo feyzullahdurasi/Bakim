@@ -22,8 +22,8 @@ class ServiceDetailViewModel: ObservableObject {
     
     func addUserComment(_ comment: String) {
         let newComment = UserComment(
-            username: "Current User", // In real app, get from user session
-            rating: 5, // Add UI for rating selection
+            username: "Current User",
+            rating: 5,
             commentText: comment
         )
         //business.comments.append(newComment)

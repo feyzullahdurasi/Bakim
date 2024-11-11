@@ -11,6 +11,7 @@ struct ThemeChangeView: View {
     @Environment(\.colorScheme) var colorScheme
     @AppStorage("userTheme") private var userTheme: Theme = .systemDefault
     @Namespace var animation
+    
     var body: some View {
         VStack(spacing: 25) {
             Text("Choose a style")
