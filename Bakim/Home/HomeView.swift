@@ -64,7 +64,7 @@ struct HomeView: View {
                 }
             }
             .navigationTitle(viewModel.selectedServiceType?.description ?? "All Services")
-            .sheet(isPresented: $isDetailView) {
+            .navigationDestination(isPresented: $isDetailView) {
                 if let service = viewModel.selectedService, let business = viewModel.currentBusiness {
                     ServiceDetailView(service: service, business: business)
                 }
@@ -89,7 +89,7 @@ struct HomeView: View {
     private func getServicePriceRange(_ service: Service) -> String {
         let prices = service.serviceFeature.map { $0.price }
         if let minPrice = prices.min(), let maxPrice = prices.max() {
-            return "\(minPrice)-\(maxPrice) USD"
+            return "4.8"
         }
         return "Price varies"
     }

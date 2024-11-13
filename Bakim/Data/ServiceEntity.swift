@@ -18,6 +18,7 @@ struct ServiceEntity: Identifiable, Codable {
     var comment: String?
     var serviceImage: String?
     
+    
     init(id: Int?, serviceName: String?, localeName: String?, carbohydrateContent: String?, rating: String?, comment: String?, serviceImage: String?) {
         self.id = id
         self.serviceName = serviceName
@@ -90,18 +91,21 @@ enum ServiceType: CustomStringConvertible, CaseIterable, Decodable {
     case menHairdresser, womenHairdresser, petCare, carWash, skinCare, spaMassage, nailCare
     
     var description: String {
+        NSLocalizedString(localizedKey, comment: "")
+    }
+    
+    private var localizedKey: String {
         switch self {
-        case .menHairdresser: return "Men's Hairdresser"
-        case .womenHairdresser: return "Women's Hairdresser"
-        case .petCare: return "Pet Care"
-        case .carWash: return "Car Wash"
-        case .skinCare: return "Skin Care"
-        case .spaMassage: return "Spa and Massage"
-        case .nailCare: return "Nail Care"
+        case .menHairdresser: return "mens_hairdresser"
+        case .womenHairdresser: return "womens_hairdresser"
+        case .petCare: return "pet_care"
+        case .carWash: return "car_wash"
+        case .skinCare: return "skin_care"
+        case .spaMassage: return "spa_massage"
+        case .nailCare: return "nail_care"
         }
     }
 }
-
 struct Service: Decodable {
     var serviceType: ServiceType
     var serviceFeature: [ServiceFeature]

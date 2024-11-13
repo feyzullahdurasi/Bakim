@@ -45,15 +45,17 @@
 "Light Theme" = "Light Theme";
 "Privacy Policy" = "Privacy Policy";
 "About" = "About";
+//Service
 "Service Selection" = "Service Selection";
 "Select the service you need" = "Select the service you need";
-"Men's Hairdresser" = "Men's Hairdresser";
-"Women's Hairdresser" = "Women's Hairdresser";
-"Pet Care" = "Pet Care";
-"Car Wash" = "Car Wash";
-"Skin Care" = "Skin Care";
-"Spa and Massage" = "Spa and Massage";
-"Nail Care" = "Nail Care";
+"mens_hairdresser" = "Men's Hairdresser";
+"womens_hairdresser" = "Women's Hairdresser";
+"pet_care" = "Pet Care";
+"car_wash" = "Car Wash";
+"skin_care" = "Skin Care";
+"spa_massage" = "Spa and Massage";
+"nail_care" = "Nail Care";
+
 "I am a business owner" = "I am a business owner";
 "Select Photo" = "Select Photo";
 "Business Name" = "Business Name";
@@ -96,3 +98,15 @@
 "Complete Payment" = "Complete Payment";
 "Reservation" = "Reservation";
 "Update User Information" = "Update User Information";
+//BusinessOwnerView
+"user_profile" = "Kullanıcı Profili";
+"income_overview" = "Income Overview";
+"business_income" = "Business Income";
+"schedule" = "Schedule";
+"select_date" = "Select Date";
+"view_appointments" = "View Appointments";
+"business_tools" = "Business Tools";
+"view_reports" = "View Reports";
+"manage_services" = "Manage Services";
+"customer_feedback" = "Customer Feedback";
+

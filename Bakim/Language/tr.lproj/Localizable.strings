@@ -45,15 +45,17 @@
 "Light Theme" = "Açık Tema";
 "Privacy Policy" = "Gizlilik Politikası";
 "About" = "Hakkında";
+//Service
 "Service Selection" = "Hizmet Seçimi";
 "Select the service you need" = "İhtiyacınız olan hizmeti seçin";
-"Men's Hairdresser" = "Erkek Kuaför";
-"Women's Hairdresser" = "Kadın Kuaför";
-"Pet Care" = "Evcil Hayvan Bakımı";
-"Car Wash" = "Oto Yıkama";
-"Skin Care" = "Cilt Bakımı";
-"Spa and Massage" = "Spa ve Masaj";
-"Nail Care" = "Tırnak Bakımı";
+"mens_hairdresser" = "Erkek Kuaförü";
+"womens_hairdresser" = "Kadın Kuaförü";
+"pet_care" = "Evcil Hayvan Bakımı";
+"car_wash" = "Araç Yıkama";
+"skin_care" = "Cilt Bakımı";
+"spa_massage" = "Spa ve Masaj";
+"nail_care" = "Tırnak Bakımı";
+
 "I am a business owner" = "Bir işletme sahibiyim";
 "Select Photo" = "Fotoğraf Seç";
 "Business Name" = "İşletme Adı";
@@ -96,3 +98,14 @@
 "Complete Payment" = "Ödemeyi Tamamla";
 "Reservation" = "Rezervasyon";
 "Update User Information" = "Kullanıcı Bilgilerini Güncelle";
+//BusinessOwnerView
+"user_profile" = "Kullanıcı Profili";
+"income_overview" = "Gelir Durumu";
+"business_income" = "İşletme Geliri";
+"schedule" = "Takvim";
+"select_date" = "Tarih Seç";
+"view_appointments" = "Randevuları Görüntüle";
+"business_tools" = "İşletme Araçları";
+"view_reports" = "Raporları Görüntüle";
+"manage_services" = "Hizmetleri Yönet";
+"customer_feedback" = "Müşteri Geri Bildirimi";

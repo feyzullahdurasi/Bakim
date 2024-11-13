@@ -34,6 +34,7 @@ struct MainTabView: View {
                 }
                 .tag(2)
         }
+        .navigationBarBackButtonHidden()
         .accentColor(.blue) // Customize the selected tab color
         .onAppear {
             // Ensure the Home tab is selected when the view appears

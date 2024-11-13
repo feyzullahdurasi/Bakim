@@ -16,12 +16,12 @@ struct InfoView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     // Title
-                    Text("Service Selection")
+                    Text(LocalizedStringKey("Service Selection"))
                         .font(.system(size: 24, weight: .bold))
                         .foregroundColor(Color(red: 25/255, green: 46/255, blue: 165/255))
 
                     // Subtitle
-                    Text("Select the service you need")
+                    Text(LocalizedStringKey("Select the service you need"))
                         .font(.system(size: 16))
                         .padding(.bottom, 32)
 
@@ -87,7 +87,7 @@ struct ServiceButton: View {
     
     var body: some View {
         Button(action: action) {
-            Text(title)
+            Text(LocalizedStringKey(title))
                 .font(.system(size: 18))
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)

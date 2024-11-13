@@ -14,7 +14,7 @@ struct BusinessOwnerView: View {
         NavigationView {
             VStack{
                 HStack{
-                    Text("User")
+                    Text("user_profile")
                         .font(.largeTitle)
                         .bold()
                     Spacer()
@@ -27,12 +27,12 @@ struct BusinessOwnerView: View {
                 
                 Form {
                     // Income Section
-                    Section(header: Text("Income Overview")) {
+                    Section(header: Text("income_overview")) {
                         NavigationLink(destination: MoneyHistoryView(viewModel: MoneyHistoryViewModel())) {
                             HStack {
-                                Text("Business Income")
+                                Text("business_income")
                                 Spacer()
-                                Text("950")
+                                Text("6.950")
                                 Text("TL")
                             }
                             .frame(height: 100)
@@ -40,25 +40,25 @@ struct BusinessOwnerView: View {
                     }
                     
                     // Calendar Section
-                    Section(header: Text("Schedule")) {
-                        DatePicker("Select Date", selection: $selectedDate, displayedComponents: .date)
+                    Section(header: Text("schedule")) {
+                        DatePicker("select_date", selection: $selectedDate, displayedComponents: .date)
                             .datePickerStyle(GraphicalDatePickerStyle())
                             .frame(maxHeight: 400)
                         NavigationLink(destination: AppointmentsView(viewModel: AppointmentsViewModel(selectedDate: selectedDate))){
-                            Text("View Appointments")
+                            Text("view_appointments")
                         }
                     }
                     
                     // Additional features for Business Owner
-                    Section(header: Text("Business Tools")) {
-                        Button("View Reports") {
+                    Section(header: Text("business_tools")) {
+                        Button("view_reports") {
                             // Implement business report view
                         }
-                        Button("Manage Services") {
-                            // Implement service management view
+                        NavigationLink(destination: ManageServicesView()) {
+                            Text("manage_services")
                         }
                         NavigationLink( destination: FeedbackView(viewModel: FeedbackViewModel())) {
-                            Text("Customer Feedback")
+                            Text("customer_feedback")
                         }
                     }
                 }

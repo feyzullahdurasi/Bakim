@@ -45,15 +45,17 @@
 "Light Theme" = "Thème clair";
 "Privacy Policy" = "Politique de confidentialité";
 "About" = "À propos";
+//Service
 "Service Selection" = "Sélection de service";
 "Select the service you need" = "Sélectionnez le service dont vous avez besoin";
-"Men's Hairdresser" = "Coiffeur pour hommes";
-"Women's Hairdresser" = "Coiffeur pour femmes";
-"Pet Care" = "Soins pour animaux";
-"Car Wash" = "Lavage de voiture";
-"Skin Care" = "Soin de la peau";
-"Spa and Massage" = "Spa et Massage";
-"Nail Care" = "Soins des ongles";
+"mens_hairdresser" = "Coiffeur pour hommes";
+"womens_hairdresser" = "Coiffeur pour femmes";
+"pet_care" = "Soins pour animaux de compagnie";
+"car_wash" = "Lavage de voiture";
+"skin_care" = "Soins de la peau";
+"spa_massage" = "Spa et massage";
+"nail_care" = "Soins des ongles";
+
 "I am a business owner" = "Je suis propriétaire d'une entreprise";
 "Select Photo" = "Sélectionner une photo";
 "Business Name" = "Nom de l'entreprise";
@@ -96,3 +98,15 @@
 "Complete Payment" = "Terminer le paiement";
 "Reservation" = "Réservation";
 "Update User Information" = "Mettre à jour les informations utilisateur";
+//BusinessOwnerView
+"user_profile" = "Profil Utilisateur";
+"income_overview" = "Vue d'ensemble des Revenus";
+"business_income" = "Revenus de l'Entreprise";
+"schedule" = "Calendrier";
+"select_date" = "Sélectionner la Date";
+"view_appointments" = "Voir les Rendez-vous";
+"business_tools" = "Outils d'Entreprise";
+"view_reports" = "Voir les Rapports";
+"manage_services" = "Gérer les Services";
+"customer_feedback" = "Avis des Clients";
+
