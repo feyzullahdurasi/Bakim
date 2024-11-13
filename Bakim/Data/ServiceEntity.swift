@@ -74,6 +74,12 @@ struct CardExpirationDate: Decodable {
     let cardExpirationYear: Int
 }
 
+struct DailyRevenueItem: Identifiable {
+    let id = UUID()
+    let date: Date
+    let revenue: Double
+}
+
 struct Business: Decodable {
     let user: [User]
     let location: [Location]

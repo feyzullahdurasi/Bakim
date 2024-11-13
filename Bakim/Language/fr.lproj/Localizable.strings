@@ -38,8 +38,7 @@
 "User Name: " = "Nom d'utilisateur : ";
 "Settings" = "Paramètres";
 "Close" = "Fermer";
-"Log Out" = "Déconnexion";
-"Exit" = "Sortie";
+"log_out" = "Déconnexion";
 "Choose a style" = "Choisir un style";
 "Dark Theme" = "Thème sombre";
 "Light Theme" = "Thème clair";
@@ -109,4 +108,7 @@
 "view_reports" = "Voir les Rapports";
 "manage_services" = "Gérer les Services";
 "customer_feedback" = "Avis des Clients";
-
+"daily_revenue" = "Revenu quotidien";
+"reports" = "Rapports";
+"exit" = "Sortie";
+"manage_services" = "Gérer les services";

@@ -19,6 +19,7 @@ struct SettingsView: View {
     let languages = ["Turkish", "English", "Deutsch", "French"]
     
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.presentationMode) var presentationMode
     
     // Dil kodlarını görüntülenen dil adlarıyla eşleştiren bir dictionary
     private let languageMapping: [String: String] = [
@@ -65,12 +66,16 @@ struct SettingsView: View {
                     }
                 }
                 
-                Section(header: Text("Exit")) {
+                Section(header: Text("exit")) {
                     NavigationLink( destination: SetUserInfoView(fullName: .constant("asdf"), email: .constant("asdf"), businessName: .constant("asdf"), location: .constant("asdf"))) {
                         Text("Update User Information")
                     }
-                    Button("Log Out") {
-                        
+                    Button(action: {
+                        logout()
+                        presentationMode.wrappedValue.dismiss()  // Bir önceki sayfaya dön
+                    }) {
+                        Text("log_out")
+                            .foregroundColor(.red)
                     }
                 }
                 
@@ -109,6 +114,10 @@ struct SettingsView: View {
         case "French": return "fr"
         default: return nil
         }
+    }
+    
+    func logout() {
+        UserDefaults.standard.removeObject(forKey: "isLoggedIn")  
     }
 }
 

@@ -38,8 +38,7 @@
 "User Name: " = "Kullanıcı Adı: ";
 "Settings" = "Ayarlar";
 "Close" = "Kapat";
-"Log Out" = "Çıkış Yap";
-"Exit" = "Cıkış";
+"log_out" = "Çıkış Yap";
 "Choose a style" = "Renk Teması seçin";
 "Dark Theme" = "Koyu Tema";
 "Light Theme" = "Açık Tema";
@@ -109,3 +108,7 @@
 "view_reports" = "Raporları Görüntüle";
 "manage_services" = "Hizmetleri Yönet";
 "customer_feedback" = "Müşteri Geri Bildirimi";
+"daily_revenue" = "Günlük Gelir";
+"reports" = "Raporlar";
+"exit" = "Çıkış";
+"manage_services" = "Hizmetleri Yönet";

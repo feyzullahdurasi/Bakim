@@ -9,6 +9,7 @@ import SwiftUI
 
 struct BusinessOwnerView: View {
     @State private var selectedDate = Date()
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         NavigationView {
@@ -18,9 +19,12 @@ struct BusinessOwnerView: View {
                         .font(.largeTitle)
                         .bold()
                     Spacer()
-                    NavigationLink(destination: SettingsView()) {
-                        Image(systemName: "gear")
-                            .padding(.horizontal)
+                    Button(action: {
+                        logout()
+                        presentationMode.wrappedValue.dismiss()  // Bir önceki sayfaya dön
+                    }) {
+                        Text("exit")
+                            .foregroundColor(.red)
                     }
                 }
                 .padding(.horizontal)
@@ -51,8 +55,8 @@ struct BusinessOwnerView: View {
                     
                     // Additional features for Business Owner
                     Section(header: Text("business_tools")) {
-                        Button("view_reports") {
-                            // Implement business report view
+                        NavigationLink(destination: ReportsView()) {
+                            Text("view_reports")
                         }
                         NavigationLink(destination: ManageServicesView()) {
                             Text("manage_services")
@@ -63,7 +67,14 @@ struct BusinessOwnerView: View {
                     }
                 }
             }
+            .navigationBarBackButtonHidden()
         }
+    }
+    
+    func logout() {
+        // Örnek olarak, kullanıcı verilerini temizleyebilir veya UserDefaults'tan silinebilir
+        UserDefaults.standard.removeObject(forKey: "isLoggedIn")  // Örneğin giriş durumunu temizlemek
+        // Oturum kapatma işlemleri burada yapılır.
     }
 }
 

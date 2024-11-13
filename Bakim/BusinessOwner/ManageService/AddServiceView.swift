@@ -35,7 +35,7 @@ struct AddServiceView: View {
                     comment: comment,
                     serviceImage: serviceImage
                 )
-                viewModel.addService(newService)
+                //viewModel.addService(newService)
             }
         }
         .navigationTitle("Add Service")

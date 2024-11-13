@@ -15,7 +15,7 @@ struct ManageServicesView: View {
     var body: some View {
         VStack {
             HStack {
-                Text("Manage Services")
+                Text("manage_services")
                     .font(.largeTitle)
                     .bold()
                 Spacer()
@@ -29,18 +29,18 @@ struct ManageServicesView: View {
             .padding(.horizontal)
             
             List {
-                ForEach(viewModel.services, id: \.id) { service in
+                ForEach(viewModel.services, id: \.serviceType) { service in
                     HStack {
                         VStack(alignment: .leading) {
-                            //Text(service.serviceType.description)
-                                //.font(.headline)
-                            //Text("Price Range: \(viewModel.getPriceRange(service))")
-                                //.font(.subheadline)
-                                //.foregroundColor(.gray)
+                            Text(service.serviceType.description)
+                                .font(.headline)
+                            Text("Price Range: \(getPriceRange(for: service))")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
                         }
                         Spacer()
                         Button(action: {
-                            //selectedService = service
+                            selectedService = service
                         }) {
                             Text("Edit")
                         }
@@ -48,7 +48,7 @@ struct ManageServicesView: View {
                         .padding(.trailing)
                         
                         Button(action: {
-                            //viewModel.deleteService(service)
+                            viewModel.deleteService(service)
                         }) {
                             Image(systemName: "trash")
                                 .foregroundColor(.red)
@@ -65,8 +65,17 @@ struct ManageServicesView: View {
         }
         .padding()
         .onAppear {
-            //viewModel.loadServices()
+            viewModel.loadServices()
         }
+    }
+    
+    // Price range hesaplamak için yardımcı fonksiyon
+    private func getPriceRange(for service: Service) -> String {
+        let prices = service.serviceFeature.map { $0.price }
+        if let minPrice = prices.min(), let maxPrice = prices.max() {
+            return "\(minPrice) - \(maxPrice)"
+        }
+        return "Price varies"
     }
 }
 

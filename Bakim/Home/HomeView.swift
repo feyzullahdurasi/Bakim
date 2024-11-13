@@ -64,11 +64,6 @@ struct HomeView: View {
                 }
             }
             .navigationTitle(viewModel.selectedServiceType?.description ?? "All Services")
-            .navigationDestination(isPresented: $isDetailView) {
-                if let service = viewModel.selectedService, let business = viewModel.currentBusiness {
-                    ServiceDetailView(service: service, business: business)
-                }
-            }
             .sheet(isPresented: $showErrorView) {
                 if let error = error {
                     UserErrorView(Error: error, isPresented: $showErrorView)
@@ -81,6 +76,11 @@ struct HomeView: View {
                 if let newError = newError {
                     error = newError
                     showErrorView = true
+                }
+            }
+            .navigationDestination(isPresented: $isDetailView) {
+                if let service = viewModel.selectedService, let business = viewModel.currentBusiness {
+                    ServiceDetailView(service: service, business: business)
                 }
             }
         }
