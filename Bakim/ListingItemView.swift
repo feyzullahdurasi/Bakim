@@ -25,15 +25,22 @@ struct ListingItemView: View {
                 
                 if let business = business {
                     BakimRemoteImage(urlString: business.BusinessImage)
+                        //.resizableImage()
                         .frame(width: 100, height: 100)
                         .clipShape(Circle())
                         .overlay(Circle().stroke(Color.gray.opacity(0.3), lineWidth: 2))
                         .shadow(radius: 5)
                 } else {
                     // Placeholder image when no business is provided
-                    Circle()
-                        .fill(Color.gray.opacity(0.3))
+                    //Circle()
+                        //.fill(Color.gray.opacity(0.3))
+
+                    Image("berber")
+                        .resizable()
                         .frame(width: 100, height: 100)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(Color.gray.opacity(0.3), lineWidth: 2))
+                        .shadow(radius: 5)
                 }
                 
                 // Barber Info (Name & Location)

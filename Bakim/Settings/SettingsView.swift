@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage("notifications") private var notificationsEnabled = true
+    @AppStorage("notifications") private var notificationsEnabled = false
     @AppStorage("darkMode") private var isDarkMode = false
     @StateObject private var languageManager = LanguageManager.shared
     @State private var changeTheme: Bool = false
@@ -21,7 +21,6 @@ struct SettingsView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentationMode
     
-    // Dil kodlarını görüntülenen dil adlarıyla eşleştiren bir dictionary
     private let languageMapping: [String: String] = [
         "tr": "Turkish",
         "en": "English",
@@ -42,6 +41,10 @@ struct SettingsView: View {
                         .onChange(of: notificationsEnabled) { newValue, _ in
                             showToast(message: newValue ? "Bildirimler Açık" : "Bildirimler Kapalı")
                         }
+                    Button("FeedBack") {
+                        sendEmail()
+                    }
+                    .foregroundColor(.black)
                 }
                 
                 Section(header: Text("Tema")) {
@@ -72,7 +75,7 @@ struct SettingsView: View {
                     }
                     Button(action: {
                         logout()
-                        presentationMode.wrappedValue.dismiss()  // Bir önceki sayfaya dön
+                        presentationMode.wrappedValue.dismiss()
                     }) {
                         Text("log_out")
                             .foregroundColor(.red)
@@ -98,6 +101,31 @@ struct SettingsView: View {
         })
     }
     
+    func sendEmail() {
+        let email = "info@businessowner.com"
+        let subject = "Feedback"
+        let body = "Merhaba,\n\nBu e-postayı geri bildirim için gönderiyorum."
+        
+        // E-posta URL'sini oluştur
+        if let emailURL = createEmailURL(to: email, subject: subject, body: body) {
+            // URL'nin geçerli olduğundan emin ol
+            if UIApplication.shared.canOpenURL(emailURL) {
+                UIApplication.shared.open(emailURL)
+            } else {
+                print("Mail uygulaması açılamıyor.")
+            }
+        }
+    }
+    
+    func createEmailURL(to: String, subject: String, body: String) -> URL? {
+        let subjectEncoded = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let bodyEncoded = body.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        
+        let urlString = "mailto:\(to)?subject=\(subjectEncoded)&body=\(bodyEncoded)"
+        return URL(string: urlString)
+    }
+    
+    
     private func setAppTheme(isDark: Bool) {
         showToast(message: isDark ? "Dark Theme" : "Light Theme")
     }
@@ -117,7 +145,7 @@ struct SettingsView: View {
     }
     
     func logout() {
-        UserDefaults.standard.removeObject(forKey: "isLoggedIn")  
+        UserDefaults.standard.removeObject(forKey: "isLoggedIn")
     }
 }
 

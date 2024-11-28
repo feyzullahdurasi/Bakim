@@ -26,7 +26,7 @@ struct AddServiceView: View {
             TextField("Service Image URL", text: $serviceImage)
             
             Button("Add Service") {
-                let newService = ServiceEntity(
+                /*let newService = ServiceEntity(
                     id: UUID().hashValue,
                     serviceName: serviceName,
                     localeName: localeName,
@@ -34,7 +34,7 @@ struct AddServiceView: View {
                     rating: rating,
                     comment: comment,
                     serviceImage: serviceImage
-                )
+                )*/
                 //viewModel.addService(newService)
             }
         }

@@ -9,7 +9,6 @@ import SwiftUI
 
 struct FeedbackView: View {
     @ObservedObject var viewModel: FeedbackViewModel
-    
     @State private var newComment = ""
     @FocusState private var isTextFieldFocused: Bool
 
@@ -17,11 +16,9 @@ struct FeedbackView: View {
         VStack(alignment: .leading, spacing: 20) {
             ScrollView {
                 ForEach(viewModel.comments) { comment in
-                    CommentRow(comment: comment)
+                    CommentRow( comment: comment)
                 }
             }
-            
-            
         }
         .navigationTitle("Feedback")
         .padding()
@@ -33,36 +30,48 @@ struct FeedbackView: View {
 
 // Row view for each comment
 struct CommentRow: View {
-    var comment: Comment
+    var comment: UserComment
     
     var body: some View {
         HStack( spacing: 5) {
-            Text(comment.userName)
+            Text(comment.username)
                 .font(.subheadline)
                 .bold()
-            Text(comment.text)
+                .padding()
+            Text(comment.commentText ?? "boş")
                 .font(.body)
                 .foregroundColor(.gray)
             Spacer()
+            Text(comment.rating.description)
+                .font(.system(size: 15, weight: .bold))
+                .foregroundColor(.white)
+                .padding(5)
+                .background(Color.blue)
+                .cornerRadius(8)
+                .shadow(radius: 5)
         }
         .padding(.vertical, 5)
     }
 }
 
+#Preview {
+    FeedbackView(viewModel: FeedbackViewModel())
+}
+
 // ViewModel to handle comment fetching and adding
 class FeedbackViewModel: ObservableObject {
-    @Published var comments: [Comment] = []
+    @Published var comments: [UserComment] = []
     
     func fetchComments() {
         // Simulate loading comments (replace with actual data fetching logic)
         comments = [
-            Comment(id: UUID(), userName: "User1", text: "Great service!"),
-            Comment(id: UUID(), userName: "User2", text: "Very satisfied with my appointment."),
-            Comment(id: UUID(), userName: "User3", text: "Professional and friendly.")
+            UserComment(id: UUID(), username: "User1", rating: 4, commentText: "Great service!"),
+            UserComment(id: UUID(), username: "User2", rating: 5, commentText: "Very satisfied with my appointment."),
+            UserComment(id: UUID(), username: "User3", rating: 4, commentText: "Professional and friendly.")
         ]
     }
     
-    func addComment(_ comment: Comment) {
+    func addComment(_ comment: UserComment) {
         comments.append(comment)
     }
 }
@@ -74,12 +83,6 @@ struct Barber {
     let barberImage: String
 }
 
-struct Comment: Identifiable {
-    let id: UUID
-    let userName: String
-    let text: String
-}
 
-#Preview {
-    FeedbackView(viewModel: FeedbackViewModel())
-}
+
+

@@ -8,24 +8,25 @@
 import Foundation
 import UIKit
 
-class APIService {
+class NetworkService {
     
-    static let shared = APIService()
+    static let shared = NetworkService()
     private let cache = NSCache<NSString, UIImage>()
     
-    static let baseURL = "https://raw.githubusercontent.com/atilsamancioglu/BTK20-JSONVeriSeti/master/"
-    private let bakimURL = baseURL + "besinler.json"
+    static let baseURL = "http://localhost:3000"
     
     private init() {}
     
+    /// Bakım Verilerini Çeker
     func getBakim(completed: @escaping (Result<[Bakim], APIError>) -> Void) {
-        guard let url = URL(string: bakimURL) else {
+        guard let url = URL(string: NetworkService.baseURL) else {
             completed(.failure(.invalidURL))
             return
         }
         
         let task = URLSession.shared.dataTask(with: URLRequest(url: url)) { data, response, error in
-            guard let _ = error else {
+            if let error = error {
+                print("Request failed: \(error.localizedDescription)")
                 completed(.failure(.unableToComplete))
                 return
             }
@@ -43,49 +44,58 @@ class APIService {
             do {
                 let decoder = JSONDecoder()
                 let decodedResponse = try decoder.decode([Bakim].self, from: data)
-                completed(.success(decodedResponse))
+                DispatchQueue.main.async {
+                    completed(.success(decodedResponse))
+                }
             } catch {
-                completed(.failure(.invalidData))
+                print("Decoding error: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    completed(.failure(.invalidData))
+                }
             }
         }
         
         task.resume()
     }
+    
+    /// Görüntü İndirir
     func downloadImage(from urlString: String, completion: @escaping (UIImage?) -> Void) {
-            
-            let cacheKey = NSString(string: urlString)
-            
-            // Check cache for image
-            if let cachedImage = cache.object(forKey: cacheKey) {
-                completion(cachedImage)
-                return
-            }
-            
-            // Validate URL
-            guard let url = URL(string: urlString) else {
+        let cacheKey = NSString(string: urlString)
+        
+        // Ön bellekte kontrol et
+        if let cachedImage = cache.object(forKey: cacheKey) {
+            completion(cachedImage)
+            return
+        }
+        
+        // URL'yi doğrula
+        guard let url = URL(string: urlString) else {
+            completion(nil)
+            return
+        }
+        
+        // Görüntüyü indir
+        let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+            if let error = error {
+                print("Image download failed: \(error.localizedDescription)")
                 completion(nil)
                 return
             }
             
-            // Download image
-            let task = URLSession.shared.dataTask(with: url) { data, response, error in
-                if let _ = error {
-                    completion(nil)
-                    return
-                }
-                
-                guard let data = data, let image = UIImage(data: data) else {
-                    completion(nil)
-                    return
-                }
-                
-                // Cache the downloaded image
-                self.cache.setObject(image, forKey: cacheKey)
-                completion(image)
+            guard let data = data, let image = UIImage(data: data) else {
+                completion(nil)
+                return
             }
             
-            task.resume()
+            // Görüntüyü ön belleğe ekle
+            self?.cache.setObject(image, forKey: cacheKey)
+            DispatchQueue.main.async {
+                completion(image)
+            }
         }
+        
+        task.resume()
+    }
 }
 
 enum APIError: Error {

@@ -11,7 +11,7 @@ final class ImageLoader: ObservableObject {
     @Published var image: Image? = nil
     
     func loadImage(from urlString: String) {
-        APIService.shared.downloadImage(from: urlString) { uiImage in
+        NetworkService.shared.downloadImage(from: urlString) { uiImage in
             guard let uiImage else { return }
             DispatchQueue.main.async {
                 self.image = Image(uiImage: uiImage)

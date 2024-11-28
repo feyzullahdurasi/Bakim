@@ -64,13 +64,20 @@ struct ServiceDetailView: View {
     
     private var serviceInfoSection: some View {
         VStack {
-            AsyncImage(url: URL(string: business.BusinessImage)) { image in
-                image.resizable()
-            } placeholder: {
-                Color.gray
+            if let imageUrl = URL(string: business.BusinessImage) {
+                AsyncImage(url: imageUrl) { image in
+                    image.resizable()
+                } placeholder: {
+                    Color.gray
+                }
+                .frame(height: 200)
+                .clipShape(RoundedRectangle(cornerRadius: 5))
+            } else {
+                Image("berber")
+                    .resizable()
+                    .frame(height: 200)
+                    .clipShape(RoundedRectangle(cornerRadius: 5))
             }
-            .frame(height: 200)
-            .clipShape(RoundedRectangle(cornerRadius: 5))
             
             HStack {
                 VStack(alignment: .leading) {
@@ -234,6 +241,6 @@ struct ServiceDetailView: View {
     }
     
     private var totalPrice: Int {
-        selectedFeatures.reduce(0) { $0 + $1.price }
+        Int(selectedFeatures.reduce(0) { $0 + $1.price })
     }
 }

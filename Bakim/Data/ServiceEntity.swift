@@ -8,38 +8,8 @@
 import Foundation
 import CoreData
 
-
-struct ServiceEntity: Identifiable, Codable {
-    var id: Int?
-    var serviceName: String?
-    var localeName: String?
-    var carbohydrateContent: String?
-    var rating: String?
-    var comment: String?
-    var serviceImage: String?
-    
-    
-    init(id: Int?, serviceName: String?, localeName: String?, carbohydrateContent: String?, rating: String?, comment: String?, serviceImage: String?) {
-        self.id = id
-        self.serviceName = serviceName
-        self.localeName = localeName
-        self.carbohydrateContent = carbohydrateContent
-        self.rating = rating
-        self.comment = comment
-        self.serviceImage = serviceImage
-    }
-    
-    enum CodingKeys: String, CodingKey {
-        case serviceName = "isim"
-        case localeName = "kalori"
-        case carbohydrateContent = "karbonhidrat"
-        case rating = "protein"
-        case comment = "yag"
-        case serviceImage = "gorsel"
-    }
-}
-
-struct UserComment: Decodable {
+struct UserComment: Decodable, Identifiable {
+    var id = UUID()
     var username: String
     var rating: Int
     var commentText: String?
@@ -93,33 +63,31 @@ struct Business: Decodable {
     var services: [Service]
 }
 
-enum ServiceType: CustomStringConvertible, CaseIterable, Decodable {
-    case menHairdresser, womenHairdresser, petCare, carWash, skinCare, spaMassage, nailCare
+enum ServiceType: String, CaseIterable, Decodable {
+    case menHairdresser = "mens_hairdresser"
+    case womenHairdresser = "womens_hairdresser"
+    case petCare = "pet_care"
+    case carWash = "car_wash"
+    case skinCare = "skin_care"
+    case spaMassage = "spa_massage"
+    case nailCare = "nail_care"
+    case homeCleaner = "home_cleaner"
+    case eventSpacesRental = "event_spaces_rental"
     
     var description: String {
-        NSLocalizedString(localizedKey, comment: "")
-    }
-    
-    private var localizedKey: String {
-        switch self {
-        case .menHairdresser: return "mens_hairdresser"
-        case .womenHairdresser: return "womens_hairdresser"
-        case .petCare: return "pet_care"
-        case .carWash: return "car_wash"
-        case .skinCare: return "skin_care"
-        case .spaMassage: return "spa_massage"
-        case .nailCare: return "nail_care"
-        }
+        NSLocalizedString(self.rawValue, comment: "")
     }
 }
-struct Service: Decodable {
-    var serviceType: ServiceType
+struct Service: Identifiable, Decodable {
+    var id: Int
+    var serviceType: String
     var serviceFeature: [ServiceFeature]
 }
 
-struct ServiceFeature: Hashable, Decodable {
+struct ServiceFeature: Identifiable, Hashable, Decodable {
+    var id: Int
     var name: String
-    var price: Int
+    var price: Double
     var duration: Int
 }
 // Sample Features for Each ServiceType
@@ -140,7 +108,7 @@ enum ReservationStatus: String, Decodable{
     case canceled = "Canceled"
 }
 
-enum UserRole: Decodable {
+enum UserRole: Decodable{
     case user(User)
     case business(Business)
 }
@@ -184,17 +152,17 @@ struct MockData {
     
     static let sampleServices: [Service] = [
         Service(
-            serviceType: .menHairdresser,
+            id: 1, serviceType: "mens_hairdresser",
             serviceFeature: [
-                ServiceFeature(name: "Haircut", price: 250, duration: 60),
-                ServiceFeature(name: "Beard Trim", price: 150, duration: 20)
+                ServiceFeature(id: 101, name: "Haircut", price: 250, duration: 60),
+                ServiceFeature(id: 102, name: "Beard Trim", price: 150, duration: 20)
             ]
         ),
         Service(
-            serviceType: .carWash,
+            id: 4, serviceType: "car_wash",
             serviceFeature: [
-                ServiceFeature(name: "Exterior Wash", price: 100, duration: 30),
-                ServiceFeature(name: "Interior Vacuum", price: 150, duration: 30)
+                ServiceFeature(id: 401, name: "Exterior Wash", price: 100, duration: 30),
+                ServiceFeature(id: 402, name: "Interior Vacuum", price: 150, duration: 30)
             ]
         )
     ]

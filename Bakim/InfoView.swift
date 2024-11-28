@@ -75,6 +75,8 @@ struct InfoView: View {
         case .skinCare: return .orange
         case .spaMassage: return .purple
         case .nailCare: return .cyan
+        case .homeCleaner: return .blue
+        case .eventSpacesRental: return .yellow
         }
     }
 }

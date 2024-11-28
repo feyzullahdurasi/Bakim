@@ -19,12 +19,8 @@ struct BusinessOwnerView: View {
                         .font(.largeTitle)
                         .bold()
                     Spacer()
-                    Button(action: {
-                        logout()
-                        presentationMode.wrappedValue.dismiss()  // Bir önceki sayfaya dön
-                    }) {
-                        Text("exit")
-                            .foregroundColor(.red)
+                    NavigationLink(destination: SettingsView()) {
+                        Image(systemName: "gearshape")
                     }
                 }
                 .padding(.horizontal)
@@ -69,12 +65,6 @@ struct BusinessOwnerView: View {
             }
             .navigationBarBackButtonHidden()
         }
-    }
-    
-    func logout() {
-        // Örnek olarak, kullanıcı verilerini temizleyebilir veya UserDefaults'tan silinebilir
-        UserDefaults.standard.removeObject(forKey: "isLoggedIn")  // Örneğin giriş durumunu temizlemek
-        // Oturum kapatma işlemleri burada yapılır.
     }
 }
 

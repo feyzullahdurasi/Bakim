@@ -37,7 +37,7 @@ class HomeViewModel: ObservableObject {
                 
                 // Filter services if a specific type is selected
                 if let selectedType = self.selectedServiceType {
-                    let filteredServices = business.services.filter { $0.serviceType == selectedType }
+                    let filteredServices = business.services.filter { $0.serviceType == selectedType.rawValue }
                     self.currentBusiness?.services = filteredServices
                 }
                 
