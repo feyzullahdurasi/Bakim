@@ -8,35 +8,47 @@
 import SwiftUI
 
 final class ImageLoader: ObservableObject {
-    @Published var image: Image? = nil
+    @Published private(set) var state: ImageState = .loading
+    private let cache = NSCache<NSString, UIImage>()
     
-    func loadImage(from urlString: String) {
-        NetworkService.shared.downloadImage(from: urlString) { uiImage in
-            guard let uiImage else { return }
-            DispatchQueue.main.async {
-                self.image = Image(uiImage: uiImage)
+    enum ImageState {
+        case loading
+        case success(Image)
+        case error
+        
+        var image: Image? {
+            switch self {
+            case .success(let image): return image
+            default: return nil
             }
         }
     }
-}
-
-struct RemoteImage: View {
     
-    var image: Image?
-    
-    var body: some View {
-        image?.resizable() ?? Image(systemName: "photo").resizable()
+    func loadImage(from urlString: String) {
+        let cacheKey = NSString(string: urlString)
+        
+        if let cachedImage = cache.object(forKey: cacheKey) {
+            self.state = .success(Image(uiImage: cachedImage))
+            return
+        }
+        
+        self.state = .loading
+        
+        NetworkService.shared.downloadImage(from: urlString) { [weak self] uiImage in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                if let uiImage = uiImage {
+                    self.cache.setObject(uiImage, forKey: cacheKey)
+                    self.state = .success(Image(uiImage: uiImage))
+                } else {
+                    self.state = .error
+                }
+            }
+        }
     }
-}
-
-struct BakimRemoteImage: View {
     
-    @StateObject var imageLoader = ImageLoader()
-    let urlString: String
-    
-    var body: some View {
-        RemoteImage(image: imageLoader.image)
-            .onAppear { imageLoader.loadImage(from: urlString) }
+    func cancelLoad() {
+        // İleride request cancellation eklenebilir
     }
-    
 }
