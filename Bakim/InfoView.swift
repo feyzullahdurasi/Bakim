@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct InfoView: View {
-    @StateObject private var viewModel = HomeViewModel()
+    @StateObject private var viewModel = InfoViewModel()
     @State private var navigateToMainTab = false
     
     var body: some View {
@@ -19,16 +19,20 @@ struct InfoView: View {
                     Text(LocalizedStringKey("Service Selection"))
                         .font(.system(size: 24, weight: .bold))
                         .foregroundColor(Color(red: 25/255, green: 46/255, blue: 165/255))
-
+                    
                     // Subtitle
                     Text(LocalizedStringKey("Select the service you need"))
                         .font(.system(size: 16))
                         .padding(.bottom, 32)
-
-                    // Buttons for services
+                    
+                    // Service Types from backend
                     VStack(spacing: 16) {
-                        ForEach(ServiceType.allCases, id: \.self) { serviceType in
-                            ServiceButton(title: serviceType.description, backgroundColor: getColor(for: serviceType)) {
+                        ForEach(viewModel.serviceTypes) { serviceType in
+                            ServiceButton(
+                                title: serviceType.name,
+                                description: serviceType.description ?? "",
+                                backgroundColor: getColor(for: serviceType.id)
+                            ) {
                                 selectService(serviceType)
                             }
                         }
@@ -38,64 +42,96 @@ struct InfoView: View {
             }
             .background(Color(UIColor.systemGray6))
             .navigationDestination(isPresented: $navigateToMainTab) {
-                MainTabView(viewModel: viewModel) // Ensure this view is correctly initialized
+                MainTabView(viewModel: HomeViewModel(selectedServiceType: viewModel.selectedServiceType))
+            }
+            .task {
+                await viewModel.loadServiceTypes()
             }
         }
-        .overlay(
-            Group {
-                if viewModel.isLoading {
-                    ProgressView()
-                        .scaleEffect(1.5)
-                        .padding()
-                }
+        .overlay {
+            if viewModel.isLoading {
+                ProgressView()
+                    .scaleEffect(1.5)
+                    .padding()
             }
-        )
-        .alert(isPresented: Binding<Bool>(
-            get: { viewModel.hasError },
-            set: { _ in viewModel.hasError = false }
-        )) {
-            Alert(title: Text("Error"), message: Text("An error occurred while loading data. Please try again."), dismissButton: .default(Text("OK")))
         }
-        .navigationBarHidden(true)
-        .navigationBarBackButtonHidden(true)
+        .alert("Error", isPresented: $viewModel.hasError) {
+            Button("OK") {}
+        } message: {
+            Text(viewModel.error?.userErrorMessage ?? "Unknown error occurred")
+        }
     }
     
     private func selectService(_ serviceType: ServiceType) {
         viewModel.selectedServiceType = serviceType
-        viewModel.refreshData(serviceType: serviceType)
         navigateToMainTab = true
     }
     
-    private func getColor(for serviceType: ServiceType) -> Color {
-        switch serviceType {
-        case .menHairdresser: return .blue
-        case .womenHairdresser: return .pink
-        case .petCare: return .green
-        case .carWash: return .red
-        case .skinCare: return .orange
-        case .spaMassage: return .purple
-        case .nailCare: return .cyan
-        case .homeCleaner: return .blue
-        case .eventSpacesRental: return .yellow
-        }
+    private func getColor(for serviceTypeId: Int) -> Color {
+        // Dinamik renk ataması için ID'ye göre renk döndür
+        let colors: [Color] = [.blue, .pink, .green, .red, .orange, .purple, .cyan, .yellow]
+        return colors[serviceTypeId % colors.count]
     }
 }
 
-// Reusable service button component
+// Yeni ViewModel oluşturalım
+@MainActor
+class InfoViewModel: ObservableObject {
+    @Published private(set) var serviceTypes: [ServiceType] = []
+    @Published private(set) var isLoading = false
+    @Published var hasError = false
+    @Published var error: APIError?
+    @Published var selectedServiceType: ServiceType?
+    
+    private let networkService: NetworkService
+    
+    init(networkService: NetworkService = .shared) {
+        self.networkService = networkService
+    }
+    
+    func loadServiceTypes() async {
+        isLoading = true
+        hasError = false
+        error = nil
+        
+        do {
+            serviceTypes = try await networkService.request(
+                endpoint: "/service-types",
+                method: "GET"
+            )
+        } catch {
+            self.error = error as? APIError ?? .unableToComplete
+            hasError = true
+        }
+        
+        isLoading = false
+    }
+}
+
+// Güncellenen ServiceButton
 struct ServiceButton: View {
-    var title: String
-    var backgroundColor: Color
-    var action: () -> Void
+    let title: String
+    let description: String
+    let backgroundColor: Color
+    let action: () -> Void
     
     var body: some View {
         Button(action: action) {
-            Text(LocalizedStringKey(title))
-                .font(.system(size: 18))
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(backgroundColor)
-                .cornerRadius(8)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(LocalizedStringKey(title))
+                    .font(.system(size: 18, weight: .semibold))
+                
+                if !description.isEmpty {
+                    Text(LocalizedStringKey(description))
+                        .font(.system(size: 14))
+                        .opacity(0.8)
+                }
+            }
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .background(backgroundColor)
+            .cornerRadius(8)
         }
     }
 }

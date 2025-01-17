@@ -59,6 +59,7 @@ enum APIError: Error {
 final class NetworkService {
     static let shared = NetworkService()
     private let cache = NSCache<NSString, UIImage>()
+    private let session = URLSession.shared
     
     private let baseURL = "http://localhost:3000/api"
     private var authToken: String? {
@@ -314,7 +315,6 @@ final class NetworkService {
 extension Notification.Name {
     static let unauthorizedAccess = Notification.Name("unauthorizedAccess")
 }
-
 extension APIError {
     var userErrorMessage: String {
         switch self {
@@ -335,3 +335,82 @@ extension APIError {
         }
     }
 }
+extension NetworkService {
+    func request<T: Decodable>(
+        endpoint: String,
+        method: String = "GET",
+        body: Data? = nil,
+        requiresAuth: Bool = true
+    ) async throws -> T {
+        guard let url = URL(string: "\(baseURL)\(endpoint)") else {
+            throw APIError.invalidURL
+        }
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = method
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        if requiresAuth {
+            guard let token = authToken else {
+                throw APIError.authenticationError
+            }
+            urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+        
+        if let body = body {
+            urlRequest.httpBody = body
+        }
+        
+        let (data, response) = try await session.data(for: urlRequest)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+        
+        switch httpResponse.statusCode {
+        case 200...299:
+            let decoder = JSONDecoder()
+            return try decoder.decode(T.self, from: data)
+        case 401:
+            throw APIError.authenticationError
+        case 422:
+            if let errors = try? JSONDecoder().decode([String].self, from: data) {
+                throw APIError.validationError(errors)
+            }
+            throw APIError.serverError("Validation failed")
+        default:
+            throw APIError.serverError("Server error with status code: \(httpResponse.statusCode)")
+        }
+    }
+    
+    func getBusinessServices(businessId: Int) async throws -> [Service] {
+        return try await request(
+            endpoint: "/businesses/\(businessId)/services"
+        )
+    }
+    
+    func createService(_ service: Service) async throws -> Service {
+        return try await request(
+            endpoint: "/services",
+            method: "POST",
+            body: try JSONEncoder().encode(service)
+        )
+    }
+    
+    func updateService(_ service: Service) async throws -> Service {
+        return try await request(
+            endpoint: "/services/\(service.id)",
+            method: "PUT",
+            body: try JSONEncoder().encode(service)
+        )
+    }
+    
+    func deleteService(serviceId: Int) async throws {
+        _ = try await request(
+            endpoint: "/services/\(serviceId)",
+            method: "DELETE"
+        ) as EmptyResponse
+    }
+}
+
+struct EmptyResponse: Codable {}

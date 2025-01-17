@@ -13,8 +13,8 @@ struct BusinessOwnerView: View {
     
     var body: some View {
         NavigationView {
-            VStack{
-                HStack{
+            VStack {
+                HStack {
                     Text("user_profile")
                         .font(.largeTitle)
                         .bold()
@@ -28,7 +28,9 @@ struct BusinessOwnerView: View {
                 Form {
                     // Income Section
                     Section(header: Text("income_overview")) {
-                        NavigationLink(destination: MoneyHistoryView(viewModel: MoneyHistoryViewModel())) {
+                        NavigationLink {
+                            MoneyHistoryView(viewModel: MoneyHistoryViewModel())
+                        } label: {
                             HStack {
                                 Text("business_income")
                                 Spacer()
@@ -44,20 +46,30 @@ struct BusinessOwnerView: View {
                         DatePicker("select_date", selection: $selectedDate, displayedComponents: .date)
                             .datePickerStyle(GraphicalDatePickerStyle())
                             .frame(maxHeight: 400)
-                        NavigationLink(destination: AppointmentsView(viewModel: AppointmentsViewModel(selectedDate: selectedDate))){
+                        NavigationLink {
+                            AppointmentsView(viewModel: AppointmentsViewModel(selectedDate: selectedDate))
+                        } label: {
                             Text("view_appointments")
                         }
                     }
                     
                     // Additional features for Business Owner
                     Section(header: Text("business_tools")) {
-                        NavigationLink(destination: ReportsView()) {
+                        NavigationLink {
+                            ReportsView()
+                        } label: {
                             Text("view_reports")
                         }
-                        NavigationLink(destination: ManageServicesView()) {
+                        
+                        NavigationLink {
+                            ManageServicesView()
+                        } label: {
                             Text("manage_services")
                         }
-                        NavigationLink( destination: FeedbackView(viewModel: FeedbackViewModel())) {
+                        
+                        NavigationLink {
+                            FeedbackView(businessId: UserDefaults.standard.integer(forKey: "businessId"))
+                        } label: {
                             Text("customer_feedback")
                         }
                     }

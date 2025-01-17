@@ -20,14 +20,18 @@ struct activityIndicator: UIViewRepresentable {
     func updateUIView(_ uiView: UIActivityIndicatorView, context: Context) {}
     
 }
-
+/*
 struct LoadingView: View {
     var body: some View {
         ZStack {
             Color(.systemBackground)
+                .opacity(0.8)
                 .edgesIgnoringSafeArea(.all)
             
-            activityIndicator()
+            ProgressView()
+                .scaleEffect(1.5)
+                .progressViewStyle(CircularProgressViewStyle(tint: .blue))
         }
     }
 }
+*/

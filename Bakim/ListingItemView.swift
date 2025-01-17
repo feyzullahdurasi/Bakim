@@ -8,80 +8,81 @@
 import SwiftUI
 
 struct ListingItemView: View {
-    var barberName: String
-    var location: String
-    var rating: String
-    var bakim: Bakim?
-    var business: Business?
+    let business: Business
+    let service: Service
     
     var body: some View {
         ZStack {
-            // Background Card
             RoundedRectangle(cornerRadius: 20)
                 .fill(Color.white)
-                .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)
+                .shadow(color: Color.black.opacity(0.2), radius: 10)
             
             HStack(spacing: 16) {
+                // İşyeri resmi
+                BusinessImageView(imageURL: business.image)
+                    .frame(width: 80, height: 80)
+                    .clipShape(Circle())
                 
-                if let business = business {
-                    BakimRemoteImage(urlString: business.BusinessImage)
-                        //.resizableImage()
-                        .frame(width: 100, height: 100)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.gray.opacity(0.3), lineWidth: 2))
-                        .shadow(radius: 5)
-                } else {
-                    // Placeholder image when no business is provided
-                    //Circle()
-                        //.fill(Color.gray.opacity(0.3))
-
-                    Image("berber")
-                        .resizable()
-                        .frame(width: 100, height: 100)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.gray.opacity(0.3), lineWidth: 2))
-                        .shadow(radius: 5)
-                }
-                
-                // Barber Info (Name & Location)
-                VStack(alignment: .leading, spacing: 8) {
-                    // Barber Name
-                    Text(barberName)
-                        .font(.title3)
-                        .fontWeight(.bold)
-                        .foregroundColor(.black)
+                // İşyeri bilgileri
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(business.name)
+                        .font(.headline)
+                        .lineLimit(1)
                     
-                    // Location
-                    HStack {
-                        Image(systemName: "mappin.and.ellipse")
-                            .foregroundColor(.gray)
-                        Text(location)
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                    }
+                    Text(service.serviceType.name)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    
+                    Text(business.address)
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                        .lineLimit(2)
                 }
                 
                 Spacer()
                 
-                // Rating Section
-                VStack {
-                    Text(rating)
-                        .font(.system(size: 15, weight: .bold))
-                        .foregroundColor(.white)
-                        .padding(5)
-                        .background(Color.blue)
-                        .cornerRadius(8)
-                        .shadow(radius: 5)
+                // Fiyat ve puan
+                VStack(spacing: 8) {
+                    RatingView(rating: service.calculatedAverageRating)
                     
-                    Text("Rating")
-                        .font(.caption)
-                        .foregroundColor(.gray)
+                    if service.minPrice > 0 {
+                        Text("\(service.minPrice)₺'den")
+                            .font(.caption)
+                            .bold()
+                            .foregroundColor(.blue)
+                    }
                 }
             }
             .padding()
         }
         .frame(height: 120)
-        .padding(.horizontal, 8)
+    }
+}
+
+struct RatingView: View {
+    let rating: Double
+    
+    var body: some View {
+        HStack(spacing: 2) {
+            Image(systemName: "star.fill")
+                .foregroundColor(.yellow)
+            Text(String(format: "%.1f", rating))
+                .font(.caption)
+        }
+    }
+}
+
+extension Service {
+    // Servisin minimum fiyatını hesaplama
+    var minPrice: Int {
+        serviceFeature.map { $0.price }.min() ?? 0
+    }
+    
+    // Ortalama puanı hesaplama
+    var calculatedAverageRating: Double {
+        guard let comments = comments, !comments.isEmpty else { return 0 }
+        let sum = comments.reduce(0) { $0 + $1.rating }
+        return Double(sum) / Double(comments.count)
     }
 }
 

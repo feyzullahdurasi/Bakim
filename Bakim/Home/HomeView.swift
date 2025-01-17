@@ -8,93 +8,69 @@
 import SwiftUI
 
 struct HomeView: View {
-    @ObservedObject var viewModel = HomeViewModel()
-    @State private var isDetailView = false
+    @StateObject private var viewModel = HomeViewModel()
+    @State private var showDestinationFilterView = false
     @State private var showSearchView = false
-    @State private var showDestinationSearchView = false
     @State private var searchWord = ""
-    @State private var showErrorView = false
-    @State private var error: APIError?
     
     var body: some View {
         NavigationView {
-            VStack {
+            VStack(spacing: 0) {
+                // Arama ve filtreleme çubuğu
                 FilterBar(
-                    showDestinationFilterView: $showDestinationSearchView,
+                    viewModel: viewModel,
+                    showDestinationFilterView: $showDestinationFilterView,
                     showSearchView: $showSearchView,
                     searchWord: $searchWord
                 )
-                .transition(.move(edge: .top))
-                .frame(height: 55)
                 
-                ScrollView {
-                    LazyVStack(spacing: 16) {
-                        if let business = viewModel.currentBusiness {
-                            ForEach(business.services, id: \.serviceType) { service in
-                                ListingItemView(
-                                    barberName: service.serviceType.description,
-                                    location: business.BusinessAddress,
-                                    rating: getServicePriceRange(service)
-                                    
-                                )
-                                .onTapGesture {
-                                    viewModel.selectedService = service
-                                    isDetailView = true
-                                }
-                            }
-                        }
-                    }
-                    .padding(.vertical)
-                }
-                .refreshable {
-                    viewModel.refreshData()
-                }
-                .opacity(viewModel.isLoading ? 0 : 1)
-                
+                // Ana liste görünümü
+                serviceListView()
+            }
+            .navigationTitle(viewModel.selectedServiceType?.name ?? "Tüm Hizmetler")
+            .overlay {
                 if viewModel.isLoading {
-                    LoadingView()
-                }
-                
-                if viewModel.hasError {
-                    Text("Error loading services. Please try again!")
-                        .font(.headline)
-                        .foregroundColor(.red)
-                        .multilineTextAlignment(.center)
-                        .padding()
+                    ProgressView()
                 }
             }
-            .navigationTitle(viewModel.selectedServiceType?.description ?? "All Services")
-            .sheet(isPresented: $showErrorView) {
-                if let error = error {
-                    UserErrorView(Error: error, isPresented: $showErrorView)
-                }
+            .alert("Hata", isPresented: $viewModel.hasError) {
+                Button("Tamam", role: .cancel) {}
+            } message: {
+                Text(viewModel.error?.userErrorMessage ?? "Bilinmeyen bir hata oluştu")
             }
-            .onAppear {
-                viewModel.refreshData()
-            }
-            .onChange(of: viewModel.error) { newError, _ in
-                if let newError = newError {
-                    error = newError
-                    showErrorView = true
-                }
-            }
-            .navigationDestination(isPresented: $isDetailView) {
-                if let service = viewModel.selectedService, let business = viewModel.currentBusiness {
-                    ServiceDetailView(service: service, business: business)
-                }
+            .task {
+                await viewModel.refreshData()
             }
         }
     }
     
-    private func getServicePriceRange(_ service: Service) -> String {
-        let prices = service.serviceFeature.map { $0.price }
-        if let minPrice = prices.min(), let maxPrice = prices.max() {
-            return "4.8"
+    @ViewBuilder
+    private func serviceListView() -> some View {
+        ScrollView {
+            LazyVStack(spacing: 16) {
+                ForEach(viewModel.filteredServices) { service in
+                    NavigationLink(
+                        destination: ServiceDetailView(
+                            service: service,
+                            business: service.business ?? viewModel.currentBusiness!
+                        )
+                    ) {
+                        ListingItemView(
+                            business: service.business ?? viewModel.currentBusiness!,
+                            service: service
+                        )
+                    }
+                }
+            }
+            .padding()
         }
-        return "Price varies"
+        .refreshable {
+            await viewModel.refreshData()
+        }
     }
 }
 
+
 #Preview {
-    HomeView(viewModel: HomeViewModel())
+    HomeView()
 }

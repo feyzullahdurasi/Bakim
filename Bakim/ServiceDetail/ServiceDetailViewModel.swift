@@ -9,60 +9,84 @@ import Foundation
 import Combine
 import UserNotifications
 
+@MainActor
 class ServiceDetailViewModel: ObservableObject {
     @Published private(set) var service: Service
     @Published private(set) var business: Business
     @Published var showAlert = false
     @Published var alertMessage = ""
+    @Published private(set) var isLoading = false
+    @Published var error: Error?
     
-    init(service: Service, business: Business) {
+    private let repository: ServiceRepositoryProtocol
+    
+    init(
+        service: Service,
+        business: Business,
+        repository: ServiceRepositoryProtocol = ServiceRepository()
+    ) {
         self.service = service
         self.business = business
+        self.repository = repository
     }
     
-    func addUserComment(_ comment: String) {
-        let newComment = UserComment(
-            username: "Current User",
-            rating: 5,
-            commentText: comment
-        )
-        //business.comments.append(newComment)
-        showAlert(message: "Comment added successfully!")
+    func makeReservation(date: Date, time: String, features: Set<ServiceFeature>) async {
+        isLoading = true
+        do {
+            let reservation = try await repository.createReservation(
+                serviceFeatures: features,
+                date: date,
+                time: time
+            )
+            
+            await scheduleReminder(for: reservation)
+            showAlert(message: "Rezervasyon başarıyla oluşturuldu!")
+            
+            // Backend'den yeni service detaylarını al
+            service = try await repository.getServiceDetails(serviceId: service.id)
+            
+        } catch let error as APIError {
+            showAlert(message: error.errorMessage)
+        } catch {
+            showAlert(message: "Beklenmeyen bir hata oluştu")
+        }
+        isLoading = false
     }
     
-    func makeReservation(date: Date, time: String, features: Set<ServiceFeature>) {
-        let reservation = Reservation(
-            service: service,
-            business: business,
-            date: date,
-            time: time,
-            status: .pending
-        )
-        scheduleReminder(for: reservation)
-        showAlert(message: "Reservation request sent successfully!")
+    func addUserComment(_ comment: String, rating: Int = 5) async {
+        isLoading = true
+        do {
+            let newComment = try await repository.addComment(
+                serviceId: service.id,
+                comment: comment,
+                rating: rating
+            )
+            
+            // Yorumları güncelle
+            service = try await repository.getServiceDetails(serviceId: service.id)
+            showAlert(message: "Yorum başarıyla eklendi!")
+        } catch {
+            showAlert(message: "Yorum eklenirken hata oluştu: \(error.localizedDescription)")
+        }
+        isLoading = false
     }
     
     func showAlert(message: String) {
-        alertMessage = message
-        showAlert = true
+        self.alertMessage = message
+        self.showAlert = true
     }
     
-    private func scheduleReminder(for reservation: Reservation) {
-        let content = UNMutableNotificationContent()
-        content.title = "Appointment Reminder"
-        content.body = "Your appointment at \(business.BusinessName) is in 2 hours!"
+    func scheduleReminder(for reservation: Reservation) async {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd" // Reservation.date formatına uygun format
         
-        let calendar = Calendar.current
-        let finalDate = calendar.date(bySettingHour: Int(reservation.time.prefix(2))!,
-                                      minute: 0, second: 0, of: reservation.date)
-        let reminderDate = finalDate?.addingTimeInterval(-2 * 3600) // 2 hours before
-        
-        if let reminderDate = reminderDate {
-            let reminderComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: reminderDate)
-            let trigger = UNCalendarNotificationTrigger(dateMatching: reminderComponents, repeats: false)
-            
-            let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-            UNUserNotificationCenter.current().add(request)
+        guard let reservationDate = formatter.date(from: reservation.date) else {
+            print("Invalid date format for reservation: \(reservation.date)")
+            return
         }
+        
+        // `reservationDate` artık bir `Date` türünde
+        print("Reminder scheduled for \(reservationDate)")
     }
+
 }

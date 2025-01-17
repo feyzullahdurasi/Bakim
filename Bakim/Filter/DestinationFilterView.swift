@@ -16,10 +16,12 @@ enum DestinationFilterOptions {
 }
 
 struct DestinationFilterView: View {
-    
     @Binding var show: Bool
+    let onFilter: (String, String, String?) -> Void
+    
     @State private var minPrice = ""
     @State private var maxPrice = ""
+    @State private var location = ""
     @State private var minYear = ""
     @State private var maxYear = ""
     @State private var minKm = ""
@@ -218,9 +220,16 @@ struct DestinationFilterView: View {
                 withAnimation(.snappy) {selectedOptions = .fuel}
             }
             
+            VStack(alignment: .leading) {
+                Text("Konum")
+                    .fontWeight(.semibold)
+                TextField("Konum girin", text: $location)
+            }
+            
             Spacer()
             
             Button("Filtrele") {
+                onFilter(minPrice, maxPrice, location.isEmpty ? nil : location)
                 show.toggle()
             }
             .frame(width: 150, height: 50)
@@ -235,7 +244,7 @@ struct DestinationFilterView: View {
 }
 
 #Preview {
-    DestinationFilterView(show: .constant(false))
+    DestinationFilterView(show: .constant(false), onFilter: { _, _, _ in })
 }
 
 struct CollapsibleDestinationViewModifier: ViewModifier {

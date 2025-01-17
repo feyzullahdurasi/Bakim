@@ -8,66 +8,117 @@
 import Foundation
 import Combine
 
+@MainActor
 class HomeViewModel: ObservableObject {
-    @Published var currentBusiness: Business?
-    @Published var selectedService: Service?
-    @Published var isLoading = false
+    @Published private(set) var currentBusiness: Business?
+    @Published private(set) var selectedServiceType: ServiceType?
+    @Published private(set) var isLoading = false
     @Published var hasError = false
-    @Published var selectedServiceType: ServiceType?
     @Published var error: APIError?
+    @Published var filteredServices: [Service] = []
     
-    private var timer: AnyCancellable?
+    private let networkService: NetworkService
+    private var refreshTimer: Timer?
     
-    init() {
+    init(networkService: NetworkService = .shared, selectedServiceType: ServiceType? = nil) {
+        self.networkService = networkService
+        self.selectedServiceType = selectedServiceType
         setupAutoRefresh()
     }
     
-    func refreshData(serviceType: ServiceType? = nil) {
+    func refreshData() async {
         isLoading = true
         hasError = false
         error = nil
         
-        // Simulating network delay with sample data
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-            guard let self = self else { return }
+        do {
+            let services = try await networkService.request(
+                endpoint: "/services",
+                method: "GET"
+            ) as [Service]
             
-            // Using MockData for demonstration
-            if case .business(let business) = MockData.sampleData.user {
-                self.currentBusiness = business
-                
-                // Filter services if a specific type is selected
-                if let selectedType = self.selectedServiceType {
-                    let filteredServices = business.services.filter { $0.serviceType == selectedType.rawValue }
-                    self.currentBusiness?.services = filteredServices
-                }
-                
-                self.hasError = false
+            if let selectedType = selectedServiceType {
+                filteredServices = services.filter { $0.serviceType.id == selectedType.id }
             } else {
-                self.hasError = true
-                self.error = .invalidData
+                filteredServices = services
             }
             
-            self.isLoading = false
-            self.saveLastRefreshTime()
+        } catch {
+            self.error = error as? APIError ?? .unableToComplete
+            hasError = true
         }
+        
+        isLoading = false
+    }
+    
+    func searchServices(query: String) async {
+        guard !query.isEmpty else {
+            await refreshData()
+            return
+        }
+        
+        isLoading = true
+        do {
+            filteredServices = try await networkService.request(
+                endpoint: "/services/search?q=\(query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")",
+                method: "GET"
+            )
+        } catch {
+            self.error = error as? APIError ?? .unableToComplete
+            hasError = true
+        }
+        isLoading = false
+    }
+    
+    func applyFilters(minPrice: Double?, maxPrice: Double?, location: String?) async {
+        isLoading = true
+        
+        var queryItems: [URLQueryItem] = []
+        if let minPrice = minPrice {
+            queryItems.append(URLQueryItem(name: "minPrice", value: String(minPrice)))
+        }
+        if let maxPrice = maxPrice {
+            queryItems.append(URLQueryItem(name: "maxPrice", value: String(maxPrice)))
+        }
+        if let location = location {
+            queryItems.append(URLQueryItem(name: "location", value: location))
+        }
+        
+        var endpoint = "/services/filter"
+        if !queryItems.isEmpty {
+            var components = URLComponents(string: endpoint)!
+            components.queryItems = queryItems
+            endpoint = components.url?.absoluteString ?? endpoint
+        }
+        
+        do {
+            filteredServices = try await networkService.request(
+                endpoint: endpoint,
+                method: "GET"
+            )
+        } catch {
+            self.error = error as? APIError ?? .unableToComplete
+            hasError = true
+        }
+        
+        isLoading = false
     }
     
     private func setupAutoRefresh() {
-        timer = Timer.publish(every: 300, on: .main, in: .common)
-            .autoconnect()
-            .sink { [weak self] _ in
-                self?.refreshData()
+        refreshTimer = Timer.scheduledTimer(withTimeInterval: 300, repeats: true) { [weak self] _ in
+            Task { [weak self] in
+                await self?.refreshData()
             }
+        }
     }
     
-    private func saveLastRefreshTime() {
-        let currentTime = Date().timeIntervalSince1970
-        UserDefaults.standard.set(currentTime, forKey: "lastRefreshTime")
+    deinit {
+        refreshTimer?.invalidate()
     }
     
     func getLastRefreshTime() -> String {
         let lastRefreshTime = UserDefaults.standard.double(forKey: "lastRefreshTime")
-        if lastRefreshTime > 0 {
+        if (lastRefreshTime > 0) {
             let date = Date(timeIntervalSince1970: lastRefreshTime)
             let formatter = DateFormatter()
             formatter.dateFormat = "dd.MM.yyyy HH:mm:ss"

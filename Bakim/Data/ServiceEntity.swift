@@ -9,6 +9,28 @@ import Foundation
 
 // MARK: - Base Models
 
+struct Service: Identifiable, Codable {
+    let id: Int
+    let serviceType: ServiceType
+    var serviceFeature: [ServiceFeature]
+    var comments: [UserComment]?
+    var description: String?
+    var averageRating: Double?
+    var business: Business? // Business ilişkisini ekleyelim
+    var isActive: Bool = true
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "ServiceID"
+        case serviceType = "ServiceType"
+        case serviceFeature = "ServiceFeatures"
+        case comments = "Comments"
+        case description = "Description"
+        case averageRating = "AverageRating"
+        case business = "Business"
+        case isActive = "IsActive"
+    }
+}
+
 struct User: Identifiable, Codable {
     let id: Int
     let username: String
@@ -68,6 +90,8 @@ struct Business: Identifiable, Codable {
     let location: Location?
     var serviceTypes: [ServiceType]?
     var reservations: [Reservation]?
+    var comments: [UserComment]?
+    var services: [Service]?
     
     enum CodingKeys: String, CodingKey {
         case id = "BusinessID"
@@ -99,9 +123,9 @@ struct ServiceType: Identifiable, Codable {
 
 struct ServiceFeature: Identifiable, Codable, Hashable {
     let id: Int
-    let name: String
-    let price: Decimal
-    let duration: Int
+    var name: String
+    var price: Int
+    var duration: Int
     
     enum CodingKeys: String, CodingKey {
         case id = "FeatureID"
@@ -140,6 +164,26 @@ struct Reservation: Identifiable, Codable {
         case business
         case serviceFeature
     }
+}
+
+struct ReservationRequest: Codable {
+    let serviceFeatureIds: [Int]
+    let date: String
+    let time: String
+    let userId: Int
+}
+
+struct CommentRequest: Codable {
+    let comment: String
+    let rating: Int
+    let userId: Int
+}
+
+struct APIResponse<T: Codable>: Codable {
+    let success: Bool
+    let data: T?
+    let message: String?
+    let errors: [String]?
 }
 
 // MARK: - Enums

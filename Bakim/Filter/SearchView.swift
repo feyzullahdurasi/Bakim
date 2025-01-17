@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct SearchView: View {
-    
     @Binding var show: Bool
     @Binding var searchWord: String
     
@@ -16,27 +15,28 @@ struct SearchView: View {
         HStack {
             Image(systemName: "magnifyingglass")
             TextField("Ara", text: $searchWord)
-            Spacer()
-            Button {
-                withAnimation(.snappy) {
-                    show.toggle()
+                .autocapitalization(.none)
+                .disableAutocorrection(true)
+            
+            if !searchWord.isEmpty {
+                Button {
+                    searchWord = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
                 }
+            }
+            
+            Button {
+                show.toggle()
             } label: {
                 Image(systemName: "xmark.circle")
                     .imageScale(.large)
             }
         }
-        .frame(height: 50)
-        .padding(.horizontal)
-        .frame(maxWidth: .infinity)
-        .overlay{
-            Capsule()
-                .stroke(lineWidth: 1)
-                .foregroundColor(Color(.systemGray2))
-                .shadow(color: .black.opacity(0.5), radius: 2)
-        }
         .padding()
-        
+        .background(Color(.systemBackground))
+        .clipShape(Capsule())
+        .shadow(radius: 2)
     }
 }
 

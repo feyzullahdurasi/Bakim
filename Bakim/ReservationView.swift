@@ -14,6 +14,12 @@ struct ReservationView: View {
     @State private var cardHolderName = ""
     @State private var saveCard = false
     
+    init(totalPrice: Int, selectedDate: Date, selectedTime: String) {
+        self.totalPrice = totalPrice
+        self.selectedDate = selectedDate
+        self.selectedTime = selectedTime
+    }
+    
     let totalPrice: Int
     let selectedDate: Date
     let selectedTime: String
